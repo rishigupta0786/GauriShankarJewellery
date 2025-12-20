@@ -28,15 +28,7 @@ export default function GalleryModal({
     >
       {/* Modal */}
       <div
-        className="
-          relative
-          w-[92vw] max-w-4xl
-          h-[60vh]
-          bg-black
-          border border-gray-800
-          rounded-xl
-          overflow-hidden
-        "
+        className="relative w-[92vw] max-w-4xl h-[60vh] bg-black border border-gray-800 rounded-xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close */}
@@ -44,8 +36,8 @@ export default function GalleryModal({
           onClick={onClose}
           className="
             absolute top-3 right-3 z-10
-            text-gray-400 hover:text-amber-300
-            transition text-sm
+            text-gray-400 hover:text-red-700
+            transition text-xl
           "
         >
           ✕
@@ -74,9 +66,9 @@ export default function GalleryModal({
           <button
             onClick={prev}
             className="
-              text-amber-300 text-xs
+              text-white text-xs
               tracking-wide
-              hover:text-amber-200
+              hover:text-green-400
               transition
             "
           >
@@ -90,9 +82,9 @@ export default function GalleryModal({
           <button
             onClick={next}
             className="
-              text-amber-300 text-xs
+              text-white text-xs
               tracking-wide
-              hover:text-amber-200
+              hover:text-green-400
               transition
             "
           >

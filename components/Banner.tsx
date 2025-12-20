@@ -40,7 +40,8 @@ export default function Banner() {
   }, []);
 
   return (
-    <section className="h-[70vh] relative flex flex-col gap-10 items-center justify-center bg-linear-to-b from-gray-900 to-gray-950 text-amber-300">
+    <section
+      className="h-[70vh] sticky top-0 z-10 flex flex-col gap-10 items-center justify-center bg-linear-to-b from-gray-900 to-gray-950text-amber-300">
       <div className="flex flex-col justify-center items-center">
         <Image
           src="/bannerlogo.png"
@@ -52,7 +53,6 @@ export default function Banner() {
           Gauri Shankar Jewellers
         </div>
       </div>
-
       <div className=" bottom-6 flex flex-col sm:flex-row gap-4">
         <div className="flex items-center justify-center px-6 py-3 border border-gray-700 rounded-xl bg-gray-800/70 backdrop-blur-md shadow-lg hover:shadow-[0_0_25px_5px_rgba(255,191,0,0.5)] transition-all duration-300">
           <span className="font-sans text-sm text-amber-400 font-medium">

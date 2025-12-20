@@ -8,8 +8,7 @@ const categories = [
 ];
 export default function Catalogue() {
   return (
-    <section className="py-20 bg-linear-to-b from-gray-950 to-gray-900 text-amber-200">
-      
+    <section  className="relative z-20 py-20 bg-linear-to-b from-gray-950 to-gray-900 text-amber-200">
       {/* Section Title */}
       <div className="text-center text-4xl md:text-5xl luxurious-roman-regular tracking-wide mb-14">
         Our Collection
