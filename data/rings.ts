@@ -1,7 +1,11 @@
 export const rings = [
   {
-    image: "/rings/ring_001.jpg",
-    sideimage:"/rings/ring_005.jpg",
+    gallery:{
+      image: "/rings/ring_001.jpg",
+      side1:"/rings/ring_003.jpg",
+      side2:"/rings/ring_004.jpg",
+      side3:"/rings/ring_002.jpg",
+    },
     articleCode: "RK1001",
     grossWeight: "1.235 gm",
     netWeight: "1.210 gm",
@@ -9,7 +13,12 @@ export const rings = [
     purity: "18K",
   },
   {
-    image: "/rings/ring_002.jpg",
+    gallery:{
+      image: "/rings/ring_005.jpg",
+      side1:"/rings/ring_007.jpg",
+      side2:"/rings/ring_008.jpg",
+      side3:"/rings/ring_006.jpg",
+    },
     articleCode: "RK1002",
     grossWeight: "1.540 gm",
     netWeight: "1.500 gm",
@@ -17,7 +26,12 @@ export const rings = [
     purity: "22K",
   },
   {
-    image: "/rings/ring_003.jpg",
+    gallery:{
+      image: "/rings/ring_009.jpg",
+      side1:"/rings/ring_011.jpg",
+      side2:"/rings/ring_012.jpg",
+      side3:"/rings/ring_010.jpg",
+    },
     articleCode: "RK1003",
     grossWeight: "1.320 gm",
     netWeight: "1.295 gm",

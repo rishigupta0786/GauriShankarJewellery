@@ -16,8 +16,9 @@ export default function RingsPage() {
           {rings.map((ring) => (
             <ProductCard
               key={ring.articleCode}
-              image={ring.image}
-              sideimage={ring.image}
+              // image={ring.gallery.image}
+              // altimage={ring.gallery.side1}
+              gallery = {ring.gallery}
               articleCode={ring.articleCode}
               grossWeight={ring.grossWeight}
               netWeight={ring.netWeight}
