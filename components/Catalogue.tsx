@@ -27,8 +27,8 @@ export default function Catalogue() {
                             border border-gray-800
                             transition-all duration-300
                             shadow-lg
-                            group-hover:shadow-[0_0_30px_rgba(255,191,0,0.35)]
-                            group-hover:-translate-y-1">
+                            group-hover:shadow-[0px_0px_30px_rgba(255,191,0,0.85)]
+                            group-hover:-translate-y-5">
 
               <span className="text-3xl tracking-wide allura-regular
                                group-hover:text-white transition">

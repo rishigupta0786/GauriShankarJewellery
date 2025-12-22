@@ -18,7 +18,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 w-full bg-gray-900/90 backdrop-blur border-b border-gray-800 z-50">
+    <nav className="fixed top-0 left-0 w-screen bg-gray-900/90 backdrop-blur border-b border-gray-800 z-50">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         
         {/* Logo */}
@@ -28,13 +28,13 @@ export default function Navbar() {
             alt="Logo"
             width={120}
             height={100}
-            className="object-contain"
+            className=" p-2"
             priority
           />
         </Link>
 
         {/* Desktop Menu (Hidden on mobile) */}
-        <div className="hidden md:flex space-x-5 text-xl text-amber-200 allura-regular">
+        <div className="hidden md:flex space-x-4  text-2xl text-amber-200 allura-regular">
           {navLinks.map((link) => (
             <Link
               key={link.name}
