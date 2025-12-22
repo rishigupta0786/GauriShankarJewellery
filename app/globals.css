@@ -24,8 +24,7 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
-.luxurious-roman-regular {
-  font-family: "Luxurious Roman", serif;
-  font-weight: 400;
-  font-style: normal;
+
+.allura-regular {
+  font-family: var(--font-allura), cursive;
 }

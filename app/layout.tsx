@@ -1,10 +1,11 @@
+import { Allura } from "next/font/google";
 import "./globals.css";
-import { Luxurious_Roman } from "next/font/google";
 
-const luxuriousRoman = Luxurious_Roman({
-  subsets: ["latin"],
+const allura = Allura({
   weight: "400",
-  variable: "--font-luxury",
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-allura",
 });
 
 export default function RootLayout({
@@ -14,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${luxuriousRoman.variable} bg-white text-gray-900`}>
+      <body className={allura.variable}>
         {children}
       </body>
     </html>

@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useState } from "react";
+import JewelleryHero from "./JewelleryHero";
 
 type MetalPrices = {
   gold: number;
@@ -13,14 +13,13 @@ export default function Banner() {
 
   const USD_INR = 90;
   const OUNCE_TO_GRAM = 31.1035;
-  const INDIA_FACTOR = 1.08; // Approx import + GST
+  const INDIA_FACTOR = 1.08;
 
   useEffect(() => {
     const fetchPrices = async () => {
       try {
         const res = await fetch("https://data-asg.goldprice.org/dbXRates/USD");
         const data = await res.json();
-
         const goldUSD = data.items[0].xauPrice;
         const silverUSD = data.items[0].xagPrice;
 
@@ -35,25 +34,31 @@ export default function Banner() {
     };
 
     fetchPrices();
-    const interval = setInterval(fetchPrices, 60 * 1000 * 60);
+    const interval = setInterval(fetchPrices, 3600000); // 1 hour
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <section
-      className="h-[70vh] sticky top-0 z-10 flex flex-col gap-10 items-center justify-center bg-linear-to-b from-gray-900 to-gray-950text-amber-300">
-      <div className="flex flex-col justify-center items-center">
-        <Image
-          src="/bannerlogo.png"
-          alt="BannerLogo"
-          width={300}
-          height={100}
-        />
-        <div className="luxurious-roman-regular text-3xl md:text-5xl">
-          Gauri Shankar Jewellers
-        </div>
+    // <section className="sticky z-10 h-[80vh] flex flex-col items-center justify-between py-12 bg-linear-to-b from-gray-900 to-gray-950 text-amber-300">
+     <section
+        className="
+          h-[80vh]
+          sticky top-0
+          z-10
+          flex flex-col 
+          items-center justify-center
+          bg-linear-to-b from-gray-900 to-gray-950
+          text-amber-300
+        "
+      > 
+
+      {/* Spacer to keep Hero centered vertically in the available top space */}
+      <div className="flex-1 flex items-center justify-center  p-4 mt-5">
+        <JewelleryHero />
       </div>
-      <div className=" bottom-6 flex flex-col sm:flex-row gap-4">
+
+      {/* Prices Container - Pushed to the bottom */}
+      <div className="w-full flex flex-col sm:flex-row items-center justify-center gap-4 ">
         <div className="flex items-center justify-center px-6 py-3 border border-gray-700 rounded-xl bg-gray-800/70 backdrop-blur-md shadow-lg hover:shadow-[0_0_25px_5px_rgba(255,191,0,0.5)] transition-all duration-300">
           <span className="font-sans text-sm text-amber-400 font-medium">
             GOLD :- {prices ? `₹${prices.gold.toFixed(0)}/g` : "Loading..."}

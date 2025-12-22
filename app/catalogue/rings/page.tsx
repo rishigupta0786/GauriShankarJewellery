@@ -8,7 +8,7 @@ export default function RingsPage() {
       <Navbar />
 
       <section className="min-h-screen bg-linear-to-b from-gray-950 to-gray-900 px-6 py-20">
-        <h1 className="text-center text-4xl luxurious-roman-regular text-amber-200 m-10">
+        <h1 className="text-center text-4xl allura-regular text-amber-200 m-10">
           Rings Collection
         </h1>
 

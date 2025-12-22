@@ -8,12 +8,12 @@ const categories = [
 ];
 export default function Catalogue() {
   return (
-    <section  className="relative z-20 py-20 bg-linear-to-b from-gray-950 to-gray-900 text-amber-200">
+<section
+  className="py-13 relative z-20 bg-linear-to-b from-gray-950 to-gray-900 text-amber-200">
       {/* Section Title */}
-      <div className="text-center text-4xl md:text-5xl luxurious-roman-regular tracking-wide mb-14">
+      <div className="text-center text-4xl md:text-5xl allura-regular tracking-wide mb-14">
         Our Collection
       </div>
-
       {/* Category Grid */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 px-10">
         {categories.map((cat) => (
@@ -30,7 +30,7 @@ export default function Catalogue() {
                             group-hover:shadow-[0_0_30px_rgba(255,191,0,0.35)]
                             group-hover:-translate-y-1">
 
-              <span className="text-xl tracking-wide luxurious-roman-regular
+              <span className="text-3xl tracking-wide allura-regular
                                group-hover:text-white transition">
                 {cat.name}
               </span>
