@@ -1,5 +1,6 @@
 import { Allura } from "next/font/google";
 import "./globals.css";
+import Navbar from "@/components/Navbar";
 
 const allura = Allura({
   weight: "400",
@@ -16,6 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={allura.variable}>
+        <Navbar />
         {children}
       </body>
     </html>

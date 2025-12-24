@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React from "react";
 
 const JewelleryHero = () => {
@@ -14,13 +15,12 @@ const JewelleryHero = () => {
           className="lg:w-full w-72 metallic-shadow"
         />
       </div>
-
       {/* Logo */}
       <div className="z-20 animate-pulse-slow">
         <img
           src={logoUrl}
           alt="Gauri Shankar Jewellers"
-          className="lg:w-full w-60"
+          className="lg:w-full w-72"
         />
       </div>
 

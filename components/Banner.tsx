@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import JewelleryHero from "./JewelleryHero";
+import Image from "next/image";
+import leftpeacock from "@/public/16190.png";
+import rightpeacock from "@/public/16191.png";
 
 type MetalPrices = {
   gold: number;
@@ -39,27 +42,43 @@ export default function Banner() {
   }, []);
 
   return (
-    // <section className="sticky z-10 h-[80vh] flex flex-col items-center justify-between py-12 bg-linear-to-b from-gray-900 to-gray-950 text-amber-300">
-     <section
-        className="
-          h-[65vh]        
-          lg:h-[80vh]
-          sticky top-0
-          z-10
-          flex flex-col 
-          items-center justify-center
-          bg-linear-to-b from-gray-900 to-gray-950
-          text-amber-300
-        "
-      > 
-
-      {/* Spacer to keep Hero centered vertically in the available top space */}
-      <div className="flex-1 flex items-center justify-center  p-4 mt-5">
-        <JewelleryHero />
+    <section
+      className="
+        h-[65vh]        
+        lg:h-[80vh]
+        sticky 
+        top-15
+        py-10
+        z-10
+        flex flex-col
+        items-center justify-around
+        bg-linear-to-b from-gray-900 to-gray-950
+        text-amber-300
+      "
+    >
+      {/* Main content container */}
+      <div className="w-full flex items-center justify-evenly">
+        <div className=" hidden md:flex justify-start">
+          <Image 
+            src={leftpeacock} 
+            alt="left" 
+            width={250}
+          />
+        </div>
+        <div className="flex-none mx-4 lg:mx-8 ">
+          <JewelleryHero />
+        </div>
+        <div className=" hidden md:flex justify-end">
+          <Image 
+            src={rightpeacock} 
+            alt="right" 
+            width={250}
+          />
+        </div>
       </div>
 
       {/* Prices Container - Pushed to the bottom */}
-      <div className="w-full flex flex-col sm:flex-row items-center justify-center gap-4 ">
+      <div className="w-full flex flex-col sm:flex-row items-center justify-center gap-4 px-4">
         <div className="flex items-center justify-center px-6 py-3 border border-gray-700 rounded-xl bg-gray-800/70 backdrop-blur-md shadow-lg hover:shadow-[0_0_15px_5px_rgba(255,191,0,0.8)] transition-all duration-300">
           <span className="font-sans text-sm text-amber-400 font-medium">
             GOLD :- {prices ? `₹${prices.gold.toFixed(0)}/g` : "Loading..."}
