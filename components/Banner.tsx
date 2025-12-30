@@ -49,6 +49,7 @@ export default function Banner() {
         sticky 
         top-15
         py-10
+        
         z-10
         flex flex-col
         items-center justify-around
