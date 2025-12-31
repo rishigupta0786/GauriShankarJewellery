@@ -1,91 +1,247 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Particles from "@/components/Particles";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Contact() {
+  const [activeCard, setActiveCard] = useState<string | null>(null);
+
+  const socialLinks = [
+    {
+      name: "WhatsApp",
+      color: "#25D366",
+      image: "/whatsapp.png",
+      href: "https://wa.me/your-number",
+    },
+    {
+      name: "Facebook",
+      color: "#1877F2",
+      image: "/facebook.png",
+      href: "https://facebook.com/your-profile",
+    },
+    {
+      name: "Instagram",
+      color: "#E4405F",
+      image: "/instagram.png",
+      href: "https://instagram.com/your-profile",
+    },
+    {
+      name: "Phone",
+      color: "#d600f0de",
+      image: "/phone.png",
+      href: "tel:+1234567890",
+    },
+    {
+      name: "VisitingCard",
+      color: "#e73535",
+      image: "/visiting.png",
+      href: "#",
+    },
+    {
+      name: "SMS",
+      color: "#00b0f0",
+      image: "/message.png",
+      href: "sms:+1234567890",
+    },
+  ];
+
   return (
-    <div className="relative w-full h-screen bg-gray-950 overflow-hidden">
-      {/* Background Particles */}
-      <div className="absolute inset-0 z-0">
+    <div className="relative min-h-screen bg-gray-950 overflow-hidden">
+      {/* Particles Background */}
+      <div className="absolute inset-0">
         <Particles
-          className="w-full h-screen"
+          className="w-full h-full"
           particleColors={["#ffffff", "#ffffff"]}
-          particleCount={500}
-          particleSpread={10}
-          speed={0.1}
+          particleCount={350}
+          particleSpread={8}
+          speed={0.15}
           particleBaseSize={100}
           moveParticlesOnHover={true}
-          alphaParticles={false}
+          alphaParticles={true}
           disableRotation={false}
         />
       </div>
 
-      {/* Foreground Content - Made click-through */}
-      <div className="relative z-10 flex h-screen items-center justify-center p-4 pointer-events-none">
-        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-32 pointer-events-auto">
-          {/* WhatsApp */}
-          <a 
-            // href="https://wa.me/your-number" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex flex-col items-center pointer-events-auto"
-          >
-            <div className="relative w-40 h-40  lg:w-52 lg:h-52">
-              <Image
-                src="/whatsapp.png"
-                alt="WhatsApp"
-                fill
-                className="object-contain hover:scale-110 transition-transform duration-300 pointer-events-auto"
-                priority
-              />
-            </div>
-            <p className="mt-6 text-2xl sm:text-3xl md:text-4xl lg:text-4xl font-semibold text-amber-400 tracking-wide allura-regular pointer-events-auto">
-              WhatsApp
-            </p>
-          </a>
+      {/* Main Content - Added top padding for navbar */}
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-16 ">
+        {/* Header with proper spacing */}
+        <motion.div
+          className="text-center mb-8 md:mb-16"
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <h1 className="allura-regular text-4xl md:text-6xl lg:text-7xl text-amber-400 mb-4 mt-4">
+            Get In Touch
+          </h1>
+          <p className="text-gray-300 text-xl max-w-2xl allura-regular px-4">
+            Connect with us through your favorite platform
+          </p>
+        </motion.div>
 
-          {/* Instagram */}
-          <a 
-            // href="https://instagram.com/your-profile" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex flex-col items-center pointer-events-auto"
-          >
-            <div className="relative w-40 h-40  lg:w-52 lg:h-52">
-              <Image
-                src="/instagram.png"
-                alt="Instagram"
-                fill
-                className="object-contain hover:scale-110 transition-transform duration-300 pointer-events-auto"
-                priority
-              />
-            </div>
-            <p className="mt-6 text-2xl sm:text-3xl md:text-4xl lg:text-4xl font-semibold text-amber-400 tracking-wide allura-regular pointer-events-auto">
-              Instagram
-            </p>
-          </a>
-          {/* Facebook */}
-          <a 
-            // href="https://facebook.com/your-profile" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex flex-col items-center pointer-events-auto"
-          >
-            <div className="relative w-40 h-40  lg:w-52 lg:h-52">
-              <Image
-                src="/facebook.png"
-                alt="Facebook"
-                fill
-                className="object-contain hover:scale-110 transition-transform duration-300 pointer-events-auto"
-                priority
-              />
-            </div>
-            <p className="mt-6 text-2xl sm:text-3xl md:text-4xl lg:text-4xl font-semibold text-amber-400 tracking-wide allura-regular pointer-events-auto">
-              Facebook
-            </p>
-          </a>
+        {/* Social Cards Grid - Updated with grid layout */}
+        <div className="w-full max-w-4xl px-4 sm:px-10">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-16">
+            {socialLinks.map((social, index) => (
+              <motion.a
+                key={social.name}
+                href={social.href}
+                target={
+                  social.name === "Phone" || social.name === "SMS"
+                    ? undefined
+                    : "_blank"
+                }
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: index * 0.1 + 0.3,
+                  duration: 0.6,
+                  type: "spring",
+                  stiffness: 100,
+                }}
+                whileHover={{
+                  scale: 1.03,
+                  y: -5,
+                  transition: { duration: 0.3 },
+                }}
+                onMouseEnter={() => setActiveCard(social.name)}
+                onMouseLeave={() => setActiveCard(null)}
+                className="relative group h-full"
+              >
+                {/* Card - Updated to rectangular and taller */}
+                <div className="relative h-full rounded-3xl overflow-hidden bg-gray-900/50 backdrop-blur-sm border border-gray-700/50 transition-all duration-300 group-hover:border-amber-500/50 shadow-lg shadow-black/20 hover:shadow-xl hover:shadow-black/30">
+                  {/* Hover Glow */}
+                  {activeCard === social.name && (
+                    <motion.div
+                      className="absolute inset-0"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 0.3 }}
+                      style={{ backgroundColor: social.color }}
+                    />
+                  )}
+
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-linear-to-b from-transparent via-black/10 to-black/30" />
+
+                  {/* Content */}
+                  <div className="relative h-full flex flex-col items-center justify-center p-6 ">
+                    {/* Icon Container */}
+                    <motion.div
+                      className="relative w-28 h-28 mb-4"
+                      whileHover={{ scale: 1.1, rotate: 3 }}
+                      transition={{ type: "spring", stiffness: 200 }}
+                    >
+                      <div className="absolute inset-0 bg-linear-to-br from-white/10 to-transparent rounded-2xl" />
+                      <Image
+                        src={social.image}
+                        alt={social.name}
+                        fill
+                        className="object-contain p-4"
+                        priority
+                      />
+
+                      {/* Pulsing Ring */}
+                      <motion.div
+                        className="absolute inset-0 rounded-full border-2"
+                        style={{ borderColor: social.color }}
+                        animate={{
+                          scale: [1, 1.1, 1],
+                          opacity: [0.5, 0.2, 0.5],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                      />
+                    </motion.div>
+
+                    {/* Social Name */}
+                    <motion.h3
+                      className="text-3xl md:text-4xl allura-regular text-center mb-2"
+                      whileHover={{ scale: 1.05 }}
+                      style={{ color: social.color }}
+                    >
+                      {social.name}
+                    </motion.h3>
+
+                    {/* Description */}
+                    <p className="text-gray-300 text-center text-lg allura-regular opacity-80">
+                      {social.name === "WhatsApp" && "Message us "}
+                      {social.name === "Facebook" && "Follow our page"}
+                      {social.name === "Instagram" && "Check our photos"}
+                      {social.name === "SMS" && "Send us a text"}
+                      {social.name === "Phone" && "Call us anytime"}
+                      {social.name === "VisitingCard" && "Download our Card"}
+                    </p>
+
+                    {/* Click Indicator */}
+                    <motion.div
+                      className="mt-2 flex items-center justify-center gap-2"
+                      animate={{
+                        opacity: activeCard === social.name ? 1 : 0.7,
+                      }}
+                    >
+                      <span className="text-amber-400/80 text-sm allura-regular">
+                        Click to connect
+                      </span>
+                      <motion.div
+                        className="w-2 h-2 bg-amber-400 rounded-full"
+                        animate={{
+                          x: [0, 4, 0],
+                        }}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          repeatType: "loop",
+                        }}
+                      />
+                    </motion.div>
+                  </div>
+                </div>
+
+                {/* Hover Indicator */}
+                <AnimatePresence>
+                  {activeCard === social.name && (
+                    <motion.div
+                      className="absolute -bottom-3 left-1/2 transform -translate-x-1/2"
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0 }}
+                    >
+                      <div className="w-8 h-8 bg-amber-400 rounded-full shadow-lg shadow-amber-400/50"></div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.a>
+            ))}
+          </div>
         </div>
+
+        {/* Footer */}
+        <motion.div
+          className="mt-12 md:mt-16 text-center px-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
+        >
+          <p className="text-gray-400 text-xl allura-regular mb-3">
+            We're always here to help
+          </p>
+          <div className="flex items-center justify-center gap-2">
+            <motion.div
+              className="w-2 h-2 bg-green-500 rounded-full"
+              animate={{ scale: [1, 1.3, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            <span className="text-xl allura-regular text-green-400">
+              Response within 24 hours
+            </span>
+          </div>
+        </motion.div>
       </div>
     </div>
   );

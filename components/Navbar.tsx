@@ -64,7 +64,7 @@ export default function Navbar() {
             exit={{ opacity: 0, y: -20 }}
             className="absolute top-16 left-0 w-full bg-gray-900/95 border-b border-gray-800 md:hidden overflow-hidden"
           >
-            <div className="flex flex-col items-center py-8 space-y-6 text-2xl text-amber-200 allura-regular">
+            <div className="flex flex-col items-center py-3 space-y-6 text-2xl text-amber-200 allura-regular">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}

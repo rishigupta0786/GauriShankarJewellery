@@ -66,13 +66,13 @@ export default function GalleryModal({
           <button
             onClick={prev}
             className="
-              text-white text-xs
+              text-white text-lg
               tracking-wide
               hover:text-green-400
               transition
             "
           >
-            ← prev
+            ←
           </button>
 
           <span className="text-gray-500 text-xs">
@@ -82,13 +82,13 @@ export default function GalleryModal({
           <button
             onClick={next}
             className="
-              text-white text-xs
+              text-white text-lg
               tracking-wide
               hover:text-green-400
               transition
             "
           >
-            next →
+            →
           </button>
         </div>
       </div>
