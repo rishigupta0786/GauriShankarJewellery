@@ -347,30 +347,6 @@ export default function AboutPage() {
                     <ChevronRight className="w-6 h-6 text-amber-400" />
                   </button>
                 </div>
-
-                {/* Progress Bar */}
-                <div className="mt-6">
-                  <div className="h-1 bg-gray-800/50 rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-full bg-amber-400"
-                      initial={{ width: "0%" }}
-                      animate={{
-                        width: `${
-                          ((currentSlide + 1) / milestones.length) * 100
-                        }%`,
-                      }}
-                      transition={{ duration: 0.5 }}
-                    />
-                  </div>
-                  <div className="flex justify-between mt-2 text-sm text-gray-400">
-                    <span className="allura-regular">
-                      Step {currentSlide + 1} of {milestones.length}
-                    </span>
-                    <span className="allura-regular">
-                      {milestones[currentSlide].year}
-                    </span>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -388,7 +364,7 @@ export default function AboutPage() {
                     transition={{ delay: index * 0.2 + 0.9 }}
                     className="relative"
                   >
-                    <div className="flex items-center w-full min-h-50">
+                    <div className="flex items-center w-full min-h-30">
                       {/* Left Side Content - Even indices */}
                       <div
                         className={`w-1/2 ${
@@ -397,8 +373,9 @@ export default function AboutPage() {
                       >
                         {index % 2 === 0 && (
                           <div className="flex justify-end">
-                            <div className="bg-gray-900/70 backdrop-blur-sm border border-gray-800/50 rounded-2xl p-6 max-w-md">
-                              <h3 className="text-2xl font-light text-white mb-2 allura-regular">
+                            <div className="bg-gray-900/70 backdrop-blur-sm border border-gray-800/50 rounded-2xl px-6 py-3 max-w-md">
+                              <h3 className="text-2xl text-center  font-light text-amber-300  allura-regular">
+                                {/* <Star className="w-5 h-5 text-amber-400 shrink-0" /> */}
                                 {milestone.title}
                               </h3>
                               <p className="text-gray-400">
@@ -441,8 +418,8 @@ export default function AboutPage() {
                       >
                         {index % 2 === 1 && (
                           <div className="flex justify-start">
-                            <div className="bg-gray-900/70 backdrop-blur-sm border border-gray-800/50 rounded-2xl p-6 max-w-md">
-                              <h3 className="text-2xl font-light text-white mb-2 allura-regular">
+                            <div className="bg-gray-900/70 backdrop-blur-sm border border-gray-800/50 rounded-2xl px-6 py-3 max-w-md">
+                              <h3 className="text-2xl text-center font-light text-amber-300 allura-regular">
                                 {milestone.title}
                               </h3>
                               <p className="text-gray-400">

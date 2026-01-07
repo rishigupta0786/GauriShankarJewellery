@@ -51,14 +51,14 @@ export default function Contact() {
     <div className="relative min-h-screen bg-gray-950 overflow-hidden">
       {/* Particles Background */}
       <div className="absolute inset-0">
-        <Particles
+       <Particles
           className="w-full h-full"
-          particleColors={["#ffffff", "#ffffff"]}
+          particleColors={["#ffca32", "#ffca32"]}
           particleCount={350}
           particleSpread={8}
           speed={0.15}
           particleBaseSize={100}
-          moveParticlesOnHover={true}
+          moveParticlesOnHover={false}
           alphaParticles={true}
           disableRotation={false}
         />
@@ -83,7 +83,7 @@ export default function Contact() {
 
         {/* Social Cards Grid - Updated with grid layout */}
         <div className="w-full max-w-4xl px-4 sm:px-10">
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-16">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {socialLinks.map((social, index) => (
               <motion.a
                 key={social.name}
@@ -161,44 +161,23 @@ export default function Contact() {
 
                     {/* Social Name */}
                     <motion.h3
-                      className="text-3xl md:text-4xl allura-regular text-center mb-2"
+                      className="text-3xl md:text-4xl allura-regular text-center "
                       whileHover={{ scale: 1.05 }}
                       style={{ color: social.color }}
                     >
                       {social.name}
                     </motion.h3>
 
-                    {/* Description */}
-                    <p className="text-gray-300 text-center text-lg allura-regular opacity-80">
-                      {social.name === "WhatsApp" && "Message us "}
-                      {social.name === "Facebook" && "Follow our page"}
-                      {social.name === "Instagram" && "Check our photos"}
-                      {social.name === "SMS" && "Send us a text"}
-                      {social.name === "Phone" && "Call us anytime"}
-                      {social.name === "VisitingCard" && "Download our Card"}
-                    </p>
-
                     {/* Click Indicator */}
                     <motion.div
-                      className="mt-2 flex items-center justify-center gap-2"
+                      className="flex items-center justify-center gap-1"
                       animate={{
                         opacity: activeCard === social.name ? 1 : 0.7,
                       }}
                     >
-                      <span className="text-amber-400/80 text-sm allura-regular">
+                      <span className="text-amber-400/80 text-xl allura-regular">
                         Click to connect
                       </span>
-                      <motion.div
-                        className="w-2 h-2 bg-amber-400 rounded-full"
-                        animate={{
-                          x: [0, 4, 0],
-                        }}
-                        transition={{
-                          duration: 1.5,
-                          repeat: Infinity,
-                          repeatType: "loop",
-                        }}
-                      />
                     </motion.div>
                   </div>
                 </div>
@@ -212,7 +191,7 @@ export default function Contact() {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0 }}
                     >
-                      <div className="w-8 h-8 bg-amber-400 rounded-full shadow-lg shadow-amber-400/50"></div>
+                      <div className="w-6 h-6 bg-amber-400 rounded-full shadow-lg shadow-amber-400/50"></div>
                     </motion.div>
                   )}
                 </AnimatePresence>
