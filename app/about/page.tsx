@@ -112,10 +112,10 @@ export default function AboutPage() {
       </div>
 
       {/* Hero Section */}
-      <section className="relative z-10 pt-32 pb-20 px-4">
+      <section className="relative z-10 pt-20 px-4">
         <div className="max-w-7xl mx-auto">
           <motion.div
-            className="text-center mb-16"
+            className="text-center mb-8 "
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}

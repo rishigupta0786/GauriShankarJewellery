@@ -164,7 +164,7 @@ export default function RingsPage() {
   const dividerVariants: Variants = {
     hidden: { width: 0 },
     visible: {
-      width: "200px",
+      width: "80%",  
       transition: {
         delay: 0.5,
         duration: 1,
@@ -188,19 +188,13 @@ export default function RingsPage() {
 
   return (
     <>
-      <Navbar />
-
+      {/* <Navbar /> */}
       <motion.section
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="min-h-screen bg-linear-to-br from-gray-900 via-black to-gray-950 px-4 sm:px-6 py-16 sm:py-24 relative overflow-hidden"
+        className="min-h-screen bg-linear-to-br from-gray-900 via-black to-gray-950 px-4 sm:px-6 py-16 relative overflow-hidden"
       >
-        {/* Luxury Background Elements */}
-        <div className="absolute inset-0 bg-[radial-linear(ellipse_at_top,var(--tw-linear-stops))] from-amber-900/10 via-transparent to-transparent"></div>
-        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-amber-500/30 to-transparent"></div>
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-amber-500/30 to-transparent"></div>
-
         {/* Animated Glowing Orbs */}
         <motion.div
           animate={{
@@ -250,9 +244,9 @@ export default function RingsPage() {
             animate="visible"
             className="text-center"
           >
-            <div className="relative inline-block mb-6">
+            <div className="relative inline-block">
               <div className="absolute -inset-4 bg-linear-to-r from-amber-500/20 to-rose-500/20 blur-2xl rounded-full"></div>
-              <h1 className="relative text-5xl sm:text-7xl lg:text-8xl allura-regular text-transparent bg-clip-text bg-linear-to-br from-amber-200 via-amber-100 to-rose-100 ">
+              <h1 className="relative text-5xl sm:text-7xl lg:text-8xl allura-regular text-transparent bg-clip-text bg-linear-to-br from-amber-200 via-amber-100 to-rose-100 py-3 ">
                 Rings Collection
               </h1>
             </div>
@@ -270,7 +264,7 @@ export default function RingsPage() {
               variants={dividerVariants}
               initial="hidden"
               animate="visible"
-              className="h-px bg-linear-to-r from-transparent via-amber-400 to-transparent mx-auto mt-6"
+              className="h-px bg-linear-to-r w-full from-transparent via-amber-400 to-transparent mx-auto my-6"
             />
           </motion.div>
 
@@ -279,12 +273,12 @@ export default function RingsPage() {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="mb-12 sm:mb-16 px-4 sm:px-0"
+            className=" mb-10 px-4 sm:px-0"
           >
             {/* Search and Sort - Enhanced Layout */}
             <motion.div
               variants={itemVariants}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6"
+              className="flex flex-col sm:flex-row items-center justify-center gap-4 "
             >
               {/* Luxury Search Bar */}
               <motion.div
@@ -423,13 +417,6 @@ export default function RingsPage() {
                     }}
                     className="relative"
                   >
-                    {/* Glow effect on hover */}
-                    <motion.div
-                      className="absolute inset-0 bg-linear-to-br from-amber-500/10 to-rose-500/10 rounded-2xl blur-xl opacity-0"
-                      whileHover={{ opacity: 1 }}
-                      transition={{ duration: 0.3 }}
-                    />
-
                     <ProductCard
                       gallery={ring.gallery}
                       articleCode={ring.articleCode}
@@ -450,7 +437,7 @@ export default function RingsPage() {
                 transition={{ duration: 0.5 }}
                 className="text-center py-24 px-4"
               >
-                <div className="inline-block p-8 rounded-2xl bg-linear-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-sm border border-gray-700/50">
+                <div className="inline-block rounded-2xl bg-linear-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-sm border border-gray-700/50">
                   <motion.div
                     animate={{
                       rotate: [0, 10, -10, 10, 0],

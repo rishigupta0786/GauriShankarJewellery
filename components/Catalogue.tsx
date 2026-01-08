@@ -81,16 +81,19 @@ export default function Catalogue() {
 
       {/* Section Title */}
       <motion.div
-        className="text-center mb-12 md:mb-20 px-4"
+        className="text-center mb-8 px-4"
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
-        <h1 className="allura-regular text-4xl md:text-6xl lg:text-7xl text-amber-200 mb-4">
+        <h1 className="allura-regular text-4xl md:text-6xl lg:text-7xl text-amber-200">
           Our Collections
         </h1>
+        <p className="text-gray-400 mb-4 text-2xl max-w-2xl mx-auto allura-regular">
+          Discover our exquisite range of handcrafted pieces
+        </p>
         <motion.div
-          className="h-1 w-24 md:w-32 bg-linear-to-r from-transparent via-amber-400 to-transparent mx-auto rounded-full"
+          className="h-1 w-[70%] bg-linear-to-r from-transparent via-amber-400 to-transparent mx-auto rounded-full"
           animate={{
             scaleX: [0.5, 1, 0.5],
             opacity: [0.5, 1, 0.5],
@@ -101,13 +104,10 @@ export default function Catalogue() {
             ease: "easeInOut",
           }}
         />
-        <p className="text-gray-400 mt-4 text-2xl max-w-2xl mx-auto allura-regular">
-          Discover our exquisite range of handcrafted pieces
-        </p>
       </motion.div>
 
       {/* Category Grid with Staggered Animation */}
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 px-4 pb-20">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 p-10">
         {collection.map((cat, index) => (
           <motion.div
             key={cat.name}
