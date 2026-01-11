@@ -38,4 +38,43 @@ export const rings = [
     designName: "Mumbai",
     purity: "18K",
   },
+  {
+    gallery:{
+      image: "/rings/ring_004.jpg",
+      side1:"/rings/ring_002.jpg",
+      side2:"/rings/ring_001.jpg",
+      side3:"/rings/ring_003.jpg",
+    },
+    articleCode: "RK1004",
+    grossWeight: "1.235 gm",
+    netWeight: "1.210 gm",
+    designName: "Agra",
+    purity: "24K",
+  },
+  {
+    gallery:{
+      image: "/rings/ring_006.jpg",
+      side1:"/rings/ring_008.jpg",
+      side2:"/rings/ring_007.jpg",
+      side3:"/rings/ring_005.jpg",
+    },
+    articleCode: "RK1005",
+    grossWeight: "1.540 gm",
+    netWeight: "1.500 gm",
+    designName: "Gazipur",
+    purity: "18K",
+  },
+  {
+    gallery:{
+      image: "/rings/ring_010.jpg",
+      side1:"/rings/ring_012.jpg",
+      side2:"/rings/ring_011.jpg",
+      side3:"/rings/ring_009.jpg",
+    },
+    articleCode: "RK1006",
+    grossWeight: "1.320 gm",
+    netWeight: "1.295 gm",
+    designName: "Muzaffarpur",
+    purity: "9K",
+  },
 ];

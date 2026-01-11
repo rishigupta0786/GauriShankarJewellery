@@ -65,10 +65,10 @@ export default function Contact() {
       </div>
 
       {/* Main Content - Added top padding for navbar */}
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-16 ">
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4  ">
         {/* Header with proper spacing */}
         <motion.div
-          className="text-center mb-8 md:mb-16"
+          className="text-center pt-12 mb-6"
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -199,28 +199,6 @@ export default function Contact() {
             ))}
           </div>
         </div>
-
-        {/* Footer */}
-        <motion.div
-          className="mt-12 md:mt-16 text-center px-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
-        >
-          <p className="text-gray-400 text-xl allura-regular mb-3">
-            We're always here to help
-          </p>
-          <div className="flex items-center justify-center gap-2">
-            <motion.div
-              className="w-2 h-2 bg-green-500 rounded-full"
-              animate={{ scale: [1, 1.3, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            <span className="text-xl allura-regular text-green-400">
-              Response within 24 hours
-            </span>
-          </div>
-        </motion.div>
       </div>
     </div>
   );

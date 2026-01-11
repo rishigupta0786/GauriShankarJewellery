@@ -35,7 +35,7 @@ export default function LuxuryNavbar() {
   return (
     <>
       {/* Fixed Navbar Container */}
-      <nav className="fixed top-0 left-0 right-0 z-50 py-4 px-6">
+      <nav className="fixed top-0 left-0 right-0 z-50 pt-2 px-6 bg-gray-950/60 md:bg-transparent">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Logo - Separated on left */}
           <motion.div whileHover={{ scale: 1.05 }} className="shrink-0">

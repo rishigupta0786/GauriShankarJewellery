@@ -103,7 +103,7 @@ export default function GalleryModal({
           initial="hidden"
           animate="visible"
           exit="exit"
-          className="relative z-10 w-full max-w-6xl h-[80vh] sm:h-[50vh] md:h-[80vh] flex flex-col md:flex-row bg-gray-950 rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 shadow-2xl"
+          className="relative z-10 w-full max-w-6xl h-[80vh] flex flex-col md:flex-row bg-gray-950 rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 shadow-2xl"
         >
           {/* Close Button */}
           <motion.button
@@ -202,7 +202,7 @@ export default function GalleryModal({
               </div>
 
               {/* Details Section at Bottom - Mobile */}
-              <div className="bg-linear-to-b from-gray-900/40 via-gray-800/30 to-gray-900/40 backdrop-blur-sm border-t border-white/10 p-4 overflow-y-auto max-h-[45%]">
+              <div className="bg-linear-to-b from-gray-900/40 via-gray-800/30 to-gray-900/40 backdrop-blur-sm border-t border-white/10 p-4 overflow-y-auto max-h-[50%]">
                 {/* Header */}
                 <div className="mb-4">
                   <div className="flex items-center gap-2 mb-2">
@@ -231,7 +231,7 @@ export default function GalleryModal({
 
                 {/* Specifications Grid */}
                 <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid-cols-2 gap-3">
                     {/* Article Code */}
                     <div className="bg-white/5 backdrop-blur-sm rounded-lg p-3 hover:bg-white/10 transition-all duration-300 border border-white/5">
                       <div className="flex items-center gap-3">
