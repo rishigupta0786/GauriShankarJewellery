@@ -45,7 +45,7 @@ export default function LuxuryNavbar() {
                 alt="Luxury Logo"
                 width={120}
                 height={45}
-                className="hover:drop-shadow-[0_0_15px_rgba(255,191,0,0.5)] transition-all duration-300"
+                className="hover:drop-shadow-[0_0_15px_rgba(255,191,0,0.5)] p-1.5 transition-all duration-300"
                 priority
               />
             </Link>
@@ -131,22 +131,22 @@ export default function LuxuryNavbar() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={toggleMenu}
-            className="md:hidden relative flex items-center justify-center w-12 h-12 rounded-full group z-50"
+            className="md:hidden relative flex items-center justify-center w-10 h-10 rounded-full group z-50"
           >
             <div className="absolute inset-0 bg-linear-to-r from-amber-500/10 to-yellow-300/10 rounded-full border border-amber-500/20 group-hover:border-amber-400/30 transition-all duration-300"></div>
-            
-            <div className="relative flex flex-col items-center justify-center space-y-1.5">
+
+            <div className="relative  flex flex-col items-center justify-center space-y-1">
               <motion.div
                 animate={isOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
-                className="w-6 h-0.5 bg-linear-to-r from-amber-300 to-yellow-200 rounded-full"
-              />
-              <motion.div
-                animate={isOpen ? { opacity: 0 } : { opacity: 1 }}
                 className="w-4 h-0.5 bg-linear-to-r from-amber-300 to-yellow-200 rounded-full"
               />
               <motion.div
+                animate={isOpen ? { opacity: 0 } : { opacity: 1 }}
+                className="w-2 h-0.5 bg-linear-to-r from-amber-300 to-yellow-200 rounded-full"
+              />
+              <motion.div
                 animate={isOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
-                className="w-6 h-0.5 bg-linear-to-r from-amber-300 to-yellow-200 rounded-full"
+                className="w-4 h-0.5 bg-linear-to-r from-amber-300 to-yellow-200 rounded-full"
               />
             </div>
           </motion.button>
@@ -175,10 +175,10 @@ export default function LuxuryNavbar() {
               >
                 {/* Gradient Background */}
                 <div className="absolute inset-0 bg-linear-to-br from-slate-900 via-slate-950 to-amber-950/30"></div>
-                
+
                 {/* Subtle Pattern Overlay */}
                 <div className="absolute inset-0 opacity-5 bg-[radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] bg-size-[20px_20px]"></div>
-                
+
                 {/* Menu Content */}
                 <div className="relative h-full flex flex-col">
                   {/* Menu Header */}
@@ -190,11 +190,11 @@ export default function LuxuryNavbar() {
                         transition={{ delay: 0.1 }}
                       >
                         <h2 className="text-4xl font-light text-amber-100 tracking-wider allura-regular">
-                          Navigation
+                          Menu
                         </h2>
                         <div className="w-full h-px bg-linear-to-r from-amber-400 to-transparent mt-1"></div>
                       </motion.div>
-                      
+
                       <motion.button
                         whileHover={{ scale: 1.1, rotate: 90 }}
                         whileTap={{ scale: 0.9 }}
@@ -207,7 +207,7 @@ export default function LuxuryNavbar() {
                   </div>
 
                   {/* Menu Items */}
-                  <div className="flex-1 p-4 overflow-y-auto">
+                  <div className=" flex-1 p-4 overflow-y-auto">
                     <div className="space-y-2">
                       {navLinks.map((link, index) => (
                         <motion.div
@@ -225,27 +225,33 @@ export default function LuxuryNavbar() {
                             }}
                             className="relative group"
                           >
-                            <div className={`flex items-center justify-between py-2 px-1 rounded-xl transition-all duration-300 ${
-                              activeLink === link.name 
-                                ? 'bg-linear-to-r from-amber-500/15 to-amber-500/5 border border-amber-500/20' 
-                                : 'hover:bg-slate-800/40 border border-transparent hover:border-amber-500/10'
-                            }`}>
+                            <div
+                              className={`flex items-center justify-between py-2 px-1 rounded-xl transition-all duration-300 ${
+                                activeLink === link.name
+                                  ? "bg-linear-to-r from-amber-500/15 to-amber-500/5 border border-amber-500/20"
+                                  : "hover:bg-slate-800/40 border border-transparent hover:border-amber-500/10"
+                              }`}
+                            >
                               {/* Left side with icon and text */}
-                              <div className="flex items-center space-x-4">
+                              <div className="flex items-center ml-2 space-x-4">
                                 {/* Icon Container */}
-                                <div className={`relative w-14 h-14  rounded-full flex items-center justify-center  transition-all duration-300 ${
-                                  activeLink === link.name
-                                    ? 'bg-linear-to-br from-amber-500/20 to-yellow-500/10'
-                                    : 'bg-slate-800/50 group-hover:bg-slate-700/50'
-                                }`}>
-                                  <div className={`relative transition-all duration-300 ${
-                                    activeLink === link.name 
-                                      ? 'text-amber-300' 
-                                      : 'text-amber-300/60 group-hover:text-amber-300'
-                                  }`}>
+                                <div
+                                  className={`relative w-14 h-14  rounded-full flex items-center justify-center  transition-all duration-300 ${
+                                    activeLink === link.name
+                                      ? "bg-linear-to-br from-amber-500/20 to-yellow-500/10"
+                                      : "bg-slate-800/50 group-hover:bg-slate-700/50"
+                                  }`}
+                                >
+                                  <div
+                                    className={`relative transition-all duration-300 ${
+                                      activeLink === link.name
+                                        ? "text-amber-300"
+                                        : "text-amber-300/60 group-hover:text-amber-300"
+                                    }`}
+                                  >
                                     {link.icon}
                                   </div>
-                                  
+
                                   {/* Glow effect for active link */}
                                   {activeLink === link.name && (
                                     <motion.div
@@ -258,15 +264,14 @@ export default function LuxuryNavbar() {
 
                                 {/* Link Text */}
                                 <div>
-                                  <span className={`block allura-regular text-2xl font-light tracking-wide transition-all duration-300 -mb-2 ${
-                                    activeLink === link.name
-                                      ? 'text-amber-100'
-                                      : 'text-amber-100/80 group-hover:text-amber-100'
-                                  }`}>
+                                  <span
+                                    className={`block allura-regular text-2xl font-light tracking-wide transition-all duration-300 -mb-2 ${
+                                      activeLink === link.name
+                                        ? "text-amber-100"
+                                        : "text-amber-100/80 group-hover:text-amber-100"
+                                    }`}
+                                  >
                                     {link.name}
-                                  </span>
-                                  <span className="block allura-regular text-md text-amber-300/40 font-light">
-                                    Navigate to {link.name}
                                   </span>
                                 </div>
                               </div>
@@ -276,8 +281,8 @@ export default function LuxuryNavbar() {
                                 animate={{ x: 0 }}
                                 className={`transition-all duration-300 ${
                                   activeLink === link.name
-                                    ? 'text-amber-300'
-                                    : 'text-amber-300/30 group-hover:text-amber-300/60'
+                                    ? "text-amber-300"
+                                    : "text-amber-300/30 group-hover:text-amber-300/60"
                                 }`}
                               >
                                 <ChevronRight className="w-5 h-5" />

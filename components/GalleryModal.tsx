@@ -231,7 +231,7 @@ export default function GalleryModal({
 
                 {/* Specifications Grid */}
                 <div className="space-y-3">
-                  <div className="grid-cols-2 gap-3">
+                  <div className=" grid grid-cols-2 gap-3">
                     {/* Article Code */}
                     <div className="bg-white/5 backdrop-blur-sm rounded-lg p-3 hover:bg-white/10 transition-all duration-300 border border-white/5">
                       <div className="flex items-center gap-3">

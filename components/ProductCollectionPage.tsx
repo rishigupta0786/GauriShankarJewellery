@@ -39,7 +39,7 @@ export default function ProductCollectionPage({
 }: ProductCollectionPageProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<"name" | "weight" | "">("");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sortOrder, setSortOrder] = useState<"a-z" | "z-a">("a-z");
   const [activeFilter, setActiveFilter] = useState<
     "all" | "gold" | "diamond" | "platinum"
   >("all");
@@ -93,13 +93,13 @@ export default function ProductCollectionPage({
     if (sortBy) {
       result.sort((a, b) => {
         if (sortBy === "name") {
-          return sortOrder === "asc"
+          return sortOrder === "a-z"
             ? a.designName.localeCompare(b.designName)
             : b.designName.localeCompare(a.designName);
         } else {
           const weightA = parseFloat(a.netWeight);
           const weightB = parseFloat(b.netWeight);
-          return sortOrder === "asc" ? weightA - weightB : weightB - weightA;
+          return sortOrder === "a-z" ? weightA - weightB : weightB - weightA;
         }
       });
     }
@@ -109,17 +109,17 @@ export default function ProductCollectionPage({
 
   const toggleSort = (type: "name" | "weight") => {
     if (sortBy === type) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+      setSortOrder(sortOrder === "a-z" ? "z-a" : "a-z");
     } else {
       setSortBy(type);
-      setSortOrder("asc");
+      setSortOrder("a-z");
     }
   };
 
   const clearAll = () => {
     setSearchTerm("");
     setSortBy("");
-    setSortOrder("asc");
+    setSortOrder("a-z");
     setActiveFilter("all");
   };
 
@@ -248,7 +248,7 @@ export default function ProductCollectionPage({
           >
             <div className="relative inline-block">
               <div className="absolute -inset-4 bg-linear-to-r from-amber-500/20 to-rose-500/20 blur-2xl rounded-full"></div>
-              <h1 className="relative text-4xl sm:text-7xl lg:text-7xl allura-regular text-transparent bg-clip-text bg-linear-to-br from-amber-200 via-amber-100 to-rose-100 py-3">
+              <h1 className="relative text-5xl sm:text-7xl lg:text-7xl allura-regular text-transparent bg-clip-text bg-linear-to-br from-amber-200 via-amber-100 mt-5 to-rose-100 py-3">
                 {title}
               </h1>
             </div>
@@ -256,7 +256,7 @@ export default function ProductCollectionPage({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.8 }}
-              className="text-gray-300 text-2xl allura-regular font-light tracking-wider max-w-2xl mx-auto"
+              className="text-gray-300 text-xl allura-regular font-light tracking-wider max-w-2xl mx-auto"
             >
               {subtitle}
             </motion.p>
@@ -285,7 +285,8 @@ export default function ProductCollectionPage({
               {/* Luxury Search Bar */}
               <motion.div
                 whileFocus={{ scale: 1.02 }}
-                className="relative grow max-w-xl"
+                // className="relative grow max-w-xl"
+                className="relative grow max-w-xl w-full sm:max-w-xl"
               >
                 <div className="absolute inset-0 bg-linear-to-r from-amber-500/10 to-rose-500/10 blur-sm rounded-xl"></div>
                 <div className="relative">
@@ -294,7 +295,7 @@ export default function ProductCollectionPage({
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder={searchPlaceholder}
-                    className="w-full pl-12 pr-6 py-4 rounded-xl bg-gray-900/80 backdrop-blur-sm border border-gray-700/50 text-white placeholder-gray-400 focus:outline-none focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 transition-all text-base"
+                    className="w-full pl-12 pr-6 py-3 rounded-xl bg-gray-900/80 backdrop-blur-sm border border-gray-700/50 text-white placeholder-gray-400 focus:outline-none focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 transition-all text-base"
                   />
                   <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-amber-400">
                     <svg
@@ -315,36 +316,38 @@ export default function ProductCollectionPage({
               </motion.div>
 
               {/* Enhanced Sort Buttons */}
-              <motion.div className="flex items-center gap-3">
-                <motion.button
-                  whileHover={buttonHoverAnimation}
-                  whileTap={buttonTapAnimation}
-                  onClick={() => toggleSort("name")}
-                  className={`px-6 py-3 rounded-xl text-sm font-medium transition-all flex items-center gap-2 backdrop-blur-sm border ${
-                    sortBy === "name"
-                      ? "bg-linear-to-r from-amber-600 to-amber-700 text-white border-amber-500 shadow-lg shadow-amber-500/30"
-                      : "bg-gray-900/50 text-gray-300 border-gray-700 hover:bg-gray-800/50 hover:border-amber-400/30"
-                  }`}
-                >
-                  <span>📝</span>
-                  Name {sortBy === "name" && (sortOrder === "asc" ? "↑" : "↓")}
-                </motion.button>
+              {/* <motion.div className="flex items-center gap-3"> */}
+              {/* Enhanced Sort Buttons */}
+              <motion.div className="flex flex-row items-center gap-3 w-full sm:w-auto">
+  <motion.button
+    whileHover={buttonHoverAnimation}
+    whileTap={buttonTapAnimation}
+    onClick={() => toggleSort("name")}
+    className={`px-6 py-3 rounded-xl text-sm font-medium transition-all flex items-center gap-2 backdrop-blur-sm border w-1/2 sm:w-auto justify-center ${
+      sortBy === "name"
+        ? "bg-linear-to-r from-amber-600 to-amber-700 text-white border-amber-500 shadow-lg shadow-amber-500/30"
+        : "bg-gray-900/50 text-gray-300 border-gray-700 hover:bg-gray-800/50 hover:border-amber-400/30"
+    }`}
+  >
+    <span>📝</span>
+    Name {sortBy === "name" && (sortOrder === "a-z" ? "↑" : "↓")}
+  </motion.button>
 
-                <motion.button
-                  whileHover={buttonHoverAnimation}
-                  whileTap={buttonTapAnimation}
-                  onClick={() => toggleSort("weight")}
-                  className={`px-6 py-3 rounded-xl text-sm font-medium transition-all flex items-center gap-2 backdrop-blur-sm border ${
-                    sortBy === "weight"
-                      ? "bg-linear-to-r from-amber-600 to-amber-700 text-white border-amber-500 shadow-lg shadow-amber-500/30"
-                      : "bg-gray-900/50 text-gray-300 border-gray-700 hover:bg-gray-800/50 hover:border-amber-400/30"
-                  }`}
-                >
-                  <span>⚖️</span>
-                  Weight{" "}
-                  {sortBy === "weight" && (sortOrder === "asc" ? "↑" : "↓")}
-                </motion.button>
-              </motion.div>
+  <motion.button
+    whileHover={buttonHoverAnimation}
+    whileTap={buttonTapAnimation}
+    onClick={() => toggleSort("weight")}
+    className={`px-6 py-3 rounded-xl text-sm font-medium transition-all flex items-center gap-2 backdrop-blur-sm border w-1/2 sm:w-auto justify-center ${
+      sortBy === "weight"
+        ? "bg-linear-to-r from-amber-600 to-amber-700 text-white border-amber-500 shadow-lg shadow-amber-500/30"
+        : "bg-gray-900/50 text-gray-300 border-gray-700 hover:bg-gray-800/50 hover:border-amber-400/30"
+    }`}
+  >
+    <span>⚖️</span>
+    Weight{" "}
+    {sortBy === "weight" && (sortOrder === "a-z" ? "↑" : "↓")}
+  </motion.button>
+</motion.div>
             </motion.div>
 
             {/* Active Filters Indicator - Enhanced */}
@@ -357,24 +360,37 @@ export default function ProductCollectionPage({
                   transition={{ duration: 0.3 }}
                   className="text-center"
                 >
-                  <div className="inline-flex items-center gap-4 px-6 py-3 bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-700/50">
+                  <div className="inline-flex items-center mt-5  gap-4 px-6 py-3 bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-700/50">
                     <p className="text-gray-300 text-sm flex items-center gap-2">
-                      <span className="text-amber-400">✨</span>
-                      Showing {filteredProducts.length} exquisite piece
-                      {filteredProducts.length !== 1 ? "s" : ""}
+                      {/* Desktop: show everything */}
+                      <span className="hidden sm:inline text-amber-400">
+                        ✨
+                      </span>
+                      <span className="hidden sm:inline">
+                        Showing {filteredProducts.length} exquisite piece
+                        {filteredProducts.length !== 1 ? "s" : ""}
+                      </span>
+
                       {searchTerm && (
-                        <span className="text-white ml-2">
+                        <span className="hidden sm:inline text-white ml-2">
                           for "
                           <span className="text-amber-300">{searchTerm}</span>"
                         </span>
                       )}
+
                       {sortBy && (
-                        <span className="text-gray-400 ml-2">
-                          • sorted by {sortBy} ({sortOrder})
-                        </span>
+                        <>
+                          <span className="hidden sm:inline text-gray-400 ml-2">
+                            • sorted by {sortBy} ({sortOrder})
+                          </span>
+                          <span className="sm:hidden text-gray-400">
+                            sorted by {sortBy} ({sortOrder})
+                          </span>
+                        </>
                       )}
+
                       {activeFilter !== "all" && (
-                        <span className="text-gray-400 ml-2">
+                        <span className="hidden sm:inline text-gray-400 ml-2">
                           • category:{" "}
                           <span className="text-amber-300">{activeFilter}</span>
                         </span>
@@ -384,7 +400,7 @@ export default function ProductCollectionPage({
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={clearAll}
-                      className="text-amber-400 hover:text-amber-300 text-xs flex items-center gap-1 px-3 py-1 rounded-full bg-amber-500/10 hover:bg-amber-500/20 transition-colors"
+                      className="text-amber-400 hover:text-amber-300 text-sm sm:text-xs flex items-center gap-1 px-4 py-2 sm:px-3 sm:py-1 rounded-full bg-amber-500/10 hover:bg-amber-500/20 transition-colors"
                     >
                       Clear all
                       <span>✕</span>
