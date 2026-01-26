@@ -1,32 +1,32 @@
-export const collection = [
+export const catalogue = [
     {
         name: "Rings",
-        image: "/collection/rings.png",
+        image: "/catalogue/rings.png",
         slug: "/catalogue/rings"
     },
     {
         name: "Necklaces",
-        image: "/collection/necklace.png",
+        image: "/catalogue/necklace.png",
         slug: "/catalogue/necklace"
     },
     {
         name: "Bracelets",
-        image: "/collection/braclet.png",
+        image: "/catalogue/braclet.png",        
         slug: "/catalogue/braclet"
     },
     {
         name: "Anklets",
-        image: "/collection/anklet.png",
+        image: "/catalogue/anklet.png",
         slug: "/catalogue/anklet"
     }, 
     {
         name: "Earrings",
-        image: "/collection/earring.png",
+        image: "/catalogue/earring.png",
         slug: "/catalogue/earring"
     },
     {
         name: "Bangles",
-        image: "/collection/bangles.png",
+        image: "/catalogue/bangles.png",
         slug: "/catalogue/bangle"
     },
 ];

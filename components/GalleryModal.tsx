@@ -27,8 +27,16 @@ type GalleryModalProps = {
   purity: string;
 };
 
+// Create a fallback placeholder image (data URL)
+const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect width='400' height='400' fill='%231f2937'/%3E%3Cpath d='M100 100L300 100L300 300L100 300Z' fill='none' stroke='%23d97706' stroke-width='2'/%3E%3Ctext x='200' y='200' text-anchor='middle' font-family='Arial' font-size='24' fill='%23d97706'%3E%3Ctspan x='200' y='180'%3E%F0%9F%92%8E%3C/tspan%3E%3Ctspan x='200' y='220' font-size='16'%3ENo Image%3C/tspan%3E%3C/text%3E%3C/svg%3E";
+
+// Helper function to check if image is valid (not empty and not placeholder)
+const isValidImage = (url: string): boolean => {
+  return !!(url && url.trim() !== "" && url !== PLACEHOLDER_IMAGE);
+};
+
 export default function GalleryModal({
-  images,
+  images: originalImages,
   current,
   setCurrent,
   onClose,
@@ -39,6 +47,15 @@ export default function GalleryModal({
   purity,
 }: GalleryModalProps) {
   const [isMobile, setIsMobile] = useState(false);
+
+  // Filter out invalid images (empty or placeholder)
+  const validImages = originalImages.filter(img => isValidImage(img));
+  
+  // If no valid images, don't show the gallery at all
+  const hasImages = validImages.length > 0;
+  
+  // Adjust current index if needed
+  const safeCurrent = hasImages ? Math.min(current, validImages.length - 1) : 0;
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -82,6 +99,18 @@ export default function GalleryModal({
     },
   };
 
+  const navigateNext = () => {
+    if (hasImages && validImages.length > 1) {
+      setCurrent(safeCurrent < validImages.length - 1 ? safeCurrent + 1 : 0);
+    }
+  };
+
+  const navigatePrev = () => {
+    if (hasImages && validImages.length > 1) {
+      setCurrent(safeCurrent > 0 ? safeCurrent - 1 : validImages.length - 1);
+    }
+  };
+
   return (
     <AnimatePresence>
       <motion.div
@@ -107,7 +136,7 @@ export default function GalleryModal({
         >
           {/* Close Button */}
           <motion.button
-              whileTap={{ scale: 0.9 }}
+            whileTap={{ scale: 0.9 }}
             onClick={onClose}
             className="absolute top-3 right-3 sm:top-4 sm:right-4 p-2 bg-white/5 hover:bg-red-700 backdrop-blur-sm text-white rounded-full transition-all duration-300 z-30"
           >
@@ -117,89 +146,102 @@ export default function GalleryModal({
           {/* Mobile View - Gallery with Details at Bottom */}
           {isMobile ? (
             <div className="flex flex-col h-full">
-              {/* Image Gallery Section */}
-              <div className="flex-1 relative bg-linear-to-br from-gray-900/30 via-gray-800/20 to-gray-900/30 backdrop-blur-sm">
-                {/* Navigation Arrows */}
-                <motion.button
-                  // whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() =>
-                    setCurrent(current > 0 ? current - 1 : images.length - 1)
-                  }
-                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-4 hover:bg-white/20  text-white rounded-full transition-all duration-300 z-10"
-                >
-                  <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
-                </motion.button>
+              {/* Image Gallery Section - Only show if has images */}
+              {hasImages ? (
+                <div className="flex-1 relative bg-linear-to-br from-gray-900/30 via-gray-800/20 to-gray-900/30 backdrop-blur-sm">
+                  {/* Navigation Arrows - Only show if multiple images */}
+                  {validImages.length > 1 && (
+                    <>
+                      <motion.button
+                        whileTap={{ scale: 0.9 }}
+                        onClick={navigatePrev}
+                        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-4 hover:bg-white/20 text-white rounded-full transition-all duration-300 z-10"
+                      >
+                        <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
+                      </motion.button>
 
-                <motion.button
-                  // whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() =>
-                    setCurrent(current < images.length - 1 ? current + 1 : 0)
-                  }
-                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-4 rounded-full transition-all duration-300 z-10"
-                >
-                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
-                </motion.button>
+                      <motion.button
+                        whileTap={{ scale: 0.9 }}
+                        onClick={navigateNext}
+                        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-4 rounded-full transition-all duration-300 z-10"
+                      >
+                        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
+                      </motion.button>
+                    </>
+                  )}
 
-                {/* Image Counter */}
-                <div className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-black/40 backdrop-blur-sm text-white text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full z-10">
-                  <span className="font-medium">{current + 1}</span>
-                  <span className="text-gray-300"> / {images.length}</span>
+                  {/* Image Counter - Only show if has images */}
+                  {validImages.length > 1 && (
+                    <div className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-black/40 backdrop-blur-sm text-white text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full z-10">
+                      <span className="font-medium">{safeCurrent + 1}</span>
+                      <span className="text-gray-300"> / {validImages.length}</span>
+                    </div>
+                  )}
+
+                  {/* Main Image */}
+                  <div className="relative w-full h-full">
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={safeCurrent}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="relative w-full h-full"
+                      >
+                        <Image
+                          src={validImages[safeCurrent]}
+                          alt={`${designName} view ${safeCurrent + 1}`}
+                          fill
+                          className="object-contain p-4 sm:p-6"
+                          sizes="100vw"
+                        />
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Thumbnails - Only show if multiple images */}
+                  {validImages.length > 1 && (
+                    <div className="absolute bottom-3 sm:bottom-4 left-0 right-0 flex justify-center gap-1 sm:gap-2 px-2 sm:px-4">
+                      {validImages.map((img, idx) => (
+                        <motion.button
+                          key={idx}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => setCurrent(idx)}
+                          className={`relative w-10 h-10 sm:w-14 sm:h-14 rounded-lg overflow-hidden transition-all duration-300 border ${
+                            safeCurrent === idx
+                              ? "border-amber-400 shadow-lg shadow-amber-500/30 scale-110"
+                              : "border-white/20 hover:border-white/40"
+                          }`}
+                        >
+                          <Image
+                            src={img}
+                            alt={`${designName} thumbnail ${idx + 1}`}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 640px) 40px, 56px"
+                          />
+                          <div
+                            className={`absolute inset-0 ${
+                              safeCurrent === idx ? "bg-amber-400/20" : "bg-black/30"
+                            }`}
+                          />
+                        </motion.button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-
-                {/* Main Image */}
-                <div className="relative w-full h-full">
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={current}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="relative w-full h-full"
-                    >
-                      <Image
-                        src={images[current]}
-                        alt={`Product view ${current + 1}`}
-                        fill
-                        className="object-contain p-4 sm:p-6"
-                        sizes="100vw"
-                      />
-                    </motion.div>
-                  </AnimatePresence>
+              ) : (
+                // No images message
+                <div className="flex-1 flex items-center justify-center bg-linear-to-br from-gray-900/30 via-gray-800/20 to-gray-900/30 backdrop-blur-sm">
+                  <div className="text-center p-8">
+                    <div className="text-6xl mb-4">📷</div>
+                    <h3 className="text-xl text-amber-300 mb-2">No Images Available</h3>
+                    <p className="text-gray-400">This product doesn't have any images</p>
+                  </div>
                 </div>
-
-                {/* Thumbnails */}
-                <div className="absolute bottom-3 sm:bottom-4 left-0 right-0 flex justify-center gap-1 sm:gap-2 px-2 sm:px-4">
-                  {images.map((img, idx) => (
-                    <motion.button
-                      key={idx}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setCurrent(idx)}
-                      className={`relative w-10 h-10 sm:w-14 sm:h-14 rounded-lg overflow-hidden transition-all duration-300 border ${
-                        current === idx
-                          ? "border-amber-400 shadow-lg shadow-amber-500/30 scale-110"
-                          : "border-white/20 hover:border-white/40"
-                      }`}
-                    >
-                      <Image
-                        src={img}
-                        alt={`Thumbnail ${idx + 1}`}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 640px) 40px, 56px"
-                      />
-                      <div
-                        className={`absolute inset-0 ${
-                          current === idx ? "bg-amber-400/20" : "bg-black/30"
-                        }`}
-                      />
-                    </motion.button>
-                  ))}
-                </div>
-              </div>
+              )}
 
               {/* Details Section at Bottom - Mobile */}
               <div className="bg-linear-to-b from-gray-900/40 via-gray-800/30 to-gray-900/40 backdrop-blur-sm border-t border-white/10 p-4 overflow-y-auto max-h-[50%]">
@@ -231,7 +273,7 @@ export default function GalleryModal({
 
                 {/* Specifications Grid */}
                 <div className="space-y-3">
-                  <div className=" grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-3">
                     {/* Article Code */}
                     <div className="bg-white/5 backdrop-blur-sm rounded-lg p-3 hover:bg-white/10 transition-all duration-300 border border-white/5">
                       <div className="flex items-center gap-3">
@@ -304,89 +346,102 @@ export default function GalleryModal({
           ) : (
             /* Desktop View - Split Layout */
             <>
-              {/* Left Side - Image Gallery */}
-              <div className="flex-1 relative bg-linear-to-br from-gray-900/30 via-gray-800/20 to-gray-900/30 ">
-                {/* Navigation Arrows */}
-                <motion.button
-                  // whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() =>
-                    setCurrent(current > 0 ? current - 1 : images.length - 1)
-                  }
-                  className="absolute left-4 top-1/2 -translate-y-1/2 p-1.5 bg-white/10 hover:bg-white/30 rounded-full transition-all duration-300 z-10"
-                >
-                  <ChevronLeft className="w-5 h-5 text-black" />
-                </motion.button>
+              {/* Left Side - Image Gallery - Only show if has images */}
+              {hasImages ? (
+                <div className="flex-1 relative bg-linear-to-br from-gray-900/30 via-gray-800/20 to-gray-900/30">
+                  {/* Navigation Arrows - Only show if multiple images */}
+                  {validImages.length > 1 && (
+                    <>
+                      <motion.button
+                        whileTap={{ scale: 0.9 }}
+                        onClick={navigatePrev}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 p-1.5 bg-white/10 hover:bg-white/30 rounded-full transition-all duration-300 z-10"
+                      >
+                        <ChevronLeft className="w-5 h-5 text-black" />
+                      </motion.button>
 
-                <motion.button
-                  // whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() =>
-                    setCurrent(current < images.length - 1 ? current + 1 : 0)
-                  }
-                  className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 bg-white/10 hover:bg-white/30  text-white rounded-full transition-all duration-300 z-10"
-                >
-                  <ChevronRight className="w-5 h-5 text-black" />
-                </motion.button>
+                      <motion.button
+                        whileTap={{ scale: 0.9 }}
+                        onClick={navigateNext}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 bg-white/10 hover:bg-white/30 text-white rounded-full transition-all duration-300 z-10"
+                      >
+                        <ChevronRight className="w-5 h-5 text-black" />
+                      </motion.button>
+                    </>
+                  )}
 
-                {/* Image Counter */}
-                <div className="absolute top-4 left-4 bg-black/40 backdrop-blur-sm text-white text-sm px-3 py-1.5 rounded-full z-10">
-                  <span className="font-medium">{current + 1}</span>
-                  <span className="text-gray-300"> / {images.length}</span>
+                  {/* Image Counter - Only show if has images */}
+                  {validImages.length > 1 && (
+                    <div className="absolute top-4 left-4 bg-black/40 backdrop-blur-sm text-white text-sm px-3 py-1.5 rounded-full z-10">
+                      <span className="font-medium">{safeCurrent + 1}</span>
+                      <span className="text-gray-300"> / {validImages.length}</span>
+                    </div>
+                  )}
+
+                  {/* Main Image */}
+                  <div className="relative w-full h-full">
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={safeCurrent}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="relative w-full h-full"
+                      >
+                        <Image
+                          src={validImages[safeCurrent]}
+                          alt={`${designName} view ${safeCurrent + 1}`}
+                          fill
+                          className="object-contain p-8"
+                          sizes="50vw"
+                        />
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Thumbnails - Only show if multiple images */}
+                  {validImages.length > 1 && (
+                    <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 px-4">
+                      {validImages.map((img, idx) => (
+                        <motion.button
+                          key={idx}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => setCurrent(idx)}
+                          className={`relative w-16 h-16 rounded-lg overflow-hidden transition-all duration-300 border ${
+                            safeCurrent === idx
+                              ? "border-amber-400 shadow-lg shadow-amber-500/30 scale-110"
+                              : "border-white/20 hover:border-white/40"
+                          }`}
+                        >
+                          <Image
+                            src={img}
+                            alt={`${designName} thumbnail ${idx + 1}`}
+                            fill
+                            className="object-cover"
+                            sizes="64px"
+                          />
+                          <div
+                            className={`absolute inset-0 ${
+                              safeCurrent === idx ? "bg-amber-400/20" : "bg-black/30"
+                            }`}
+                          />
+                        </motion.button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-
-                {/* Main Image */}
-                <div className="relative w-full h-full">
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={current}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="relative w-full h-full"
-                    >
-                      <Image
-                        src={images[current]}
-                        alt={`Product view ${current + 1}`}
-                        fill
-                        className="object-contain p-8"
-                        sizes="50vw"
-                      />
-                    </motion.div>
-                  </AnimatePresence>
+              ) : (
+                // No images message for desktop
+                <div className="flex-1 flex items-center justify-center bg-linear-to-br from-gray-900/30 via-gray-800/20 to-gray-900/30">
+                  <div className="text-center p-12">
+                    <div className="text-7xl mb-6">📷</div>
+                    <h3 className="text-2xl text-amber-300 mb-3">No Images Available</h3>
+                    <p className="text-gray-400 text-lg">This product doesn't have any images</p>
+                  </div>
                 </div>
-
-                {/* Thumbnails */}
-                <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 px-4">
-                  {images.map((img, idx) => (
-                    <motion.button
-                      key={idx}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setCurrent(idx)}
-                      className={`relative w-16 h-16 rounded-lg overflow-hidden transition-all duration-300 border ${
-                        current === idx
-                          ? "border-amber-400 shadow-lg shadow-amber-500/30 scale-110"
-                          : "border-white/20 hover:border-white/40"
-                      }`}
-                    >
-                      <Image
-                        src={img}
-                        alt={`Thumbnail ${idx + 1}`}
-                        fill
-                        className="object-cover"
-                        sizes="64px"
-                      />
-                      <div
-                        className={`absolute inset-0 ${
-                          current === idx ? "bg-amber-400/20" : "bg-black/30"
-                        }`}
-                      />
-                    </motion.button>
-                  ))}
-                </div>
-              </div>
+              )}
 
               {/* Right Side - Details Panel */}
               <div className="w-96 flex flex-col bg-linear-to-b from-gray-900/40 via-gray-800/30 to-gray-900/40 backdrop-blur-sm border-l border-white/10 p-6 overflow-y-auto">

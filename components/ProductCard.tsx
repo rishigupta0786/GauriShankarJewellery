@@ -21,6 +21,17 @@ type ProductCardProps = {
   onOpenModal: () => void;
 };
 
+// Create a fallback placeholder image (data URL)
+const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect width='400' height='400' fill='%231f2937'/%3E%3Cpath d='M100 100L300 100L300 300L100 300Z' fill='none' stroke='%23d97706' stroke-width='2'/%3E%3Ctext x='200' y='200' text-anchor='middle' font-family='Arial' font-size='24' fill='%23d97706'%3E%3Ctspan x='200' y='180'%3E%F0%9F%92%8E%3C/tspan%3E%3Ctspan x='200' y='220' font-size='16'%3ENo Image%3C/tspan%3E%3C/text%3E%3C/svg%3E";
+
+// Helper function to validate image URL
+const getValidImageUrl = (url: string): string => {
+  if (!url || url.trim() === "") {
+    return PLACEHOLDER_IMAGE;
+  }
+  return url;
+};
+
 export default function ProductCard({
   gallery,
   articleCode,
@@ -30,7 +41,14 @@ export default function ProductCard({
   purity,
   onOpenModal,
 }: ProductCardProps) {
-  const images = [gallery.image, gallery.side1, gallery.side2, gallery.side3];
+  // Filter out empty images and add placeholders
+  const images = [
+    gallery.image,
+    gallery.side1,
+    gallery.side2,
+    gallery.side3,
+  ].map(img => getValidImageUrl(img));
+  
   const [hoveredImage, setHoveredImage] = useState(0);
 
   // Material/Stone emojis based on design name
@@ -93,6 +111,10 @@ export default function ProductCard({
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                onError={(e) => {
+                  // Fallback if the image URL fails to load
+                  (e.target as HTMLImageElement).src = PLACEHOLDER_IMAGE;
+                }}
               />
             </div>
           ))}

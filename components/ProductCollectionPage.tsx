@@ -24,18 +24,12 @@ interface ProductCollectionPageProps {
   title: string;
   subtitle: string;
   products: Product[];
-  emptyStateEmoji: string;
-  emptyStateMessage: string;
-  searchPlaceholder: string;
 }
 
 export default function ProductCollectionPage({
   title,
   subtitle,
   products,
-  emptyStateEmoji,
-  emptyStateMessage,
-  searchPlaceholder,
 }: ProductCollectionPageProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<"name" | "weight" | "">("");
@@ -85,7 +79,7 @@ export default function ProductCollectionPage({
       result = result.filter(
         (product) =>
           product.designName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.articleCode.toLowerCase().includes(searchTerm.toLowerCase())
+          product.articleCode.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -294,7 +288,7 @@ export default function ProductCollectionPage({
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder={searchPlaceholder}
+                    placeholder="Search by name or article code..."
                     className="w-full pl-12 pr-6 py-3 rounded-xl bg-gray-900/80 backdrop-blur-sm border border-gray-700/50 text-white placeholder-gray-400 focus:outline-none focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 transition-all text-base"
                   />
                   <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-amber-400">
@@ -319,35 +313,35 @@ export default function ProductCollectionPage({
               {/* <motion.div className="flex items-center gap-3"> */}
               {/* Enhanced Sort Buttons */}
               <motion.div className="flex flex-row items-center gap-3 w-full sm:w-auto">
-  <motion.button
-    whileHover={buttonHoverAnimation}
-    whileTap={buttonTapAnimation}
-    onClick={() => toggleSort("name")}
-    className={`px-6 py-3 rounded-xl text-sm font-medium transition-all flex items-center gap-2 backdrop-blur-sm border w-1/2 sm:w-auto justify-center ${
-      sortBy === "name"
-        ? "bg-linear-to-r from-amber-600 to-amber-700 text-white border-amber-500 shadow-lg shadow-amber-500/30"
-        : "bg-gray-900/50 text-gray-300 border-gray-700 hover:bg-gray-800/50 hover:border-amber-400/30"
-    }`}
-  >
-    <span>📝</span>
-    Name {sortBy === "name" && (sortOrder === "a-z" ? "↑" : "↓")}
-  </motion.button>
+                <motion.button
+                  whileHover={buttonHoverAnimation}
+                  whileTap={buttonTapAnimation}
+                  onClick={() => toggleSort("name")}
+                  className={`px-6 py-3 rounded-xl text-sm font-medium transition-all flex items-center gap-2 backdrop-blur-sm border w-1/2 sm:w-auto justify-center ${
+                    sortBy === "name"
+                      ? "bg-linear-to-r from-amber-600 to-amber-700 text-white border-amber-500 shadow-lg shadow-amber-500/30"
+                      : "bg-gray-900/50 text-gray-300 border-gray-700 hover:bg-gray-800/50 hover:border-amber-400/30"
+                  }`}
+                >
+                  <span>📝</span>
+                  Name {sortBy === "name" && (sortOrder === "a-z" ? "↑" : "↓")}
+                </motion.button>
 
-  <motion.button
-    whileHover={buttonHoverAnimation}
-    whileTap={buttonTapAnimation}
-    onClick={() => toggleSort("weight")}
-    className={`px-6 py-3 rounded-xl text-sm font-medium transition-all flex items-center gap-2 backdrop-blur-sm border w-1/2 sm:w-auto justify-center ${
-      sortBy === "weight"
-        ? "bg-linear-to-r from-amber-600 to-amber-700 text-white border-amber-500 shadow-lg shadow-amber-500/30"
-        : "bg-gray-900/50 text-gray-300 border-gray-700 hover:bg-gray-800/50 hover:border-amber-400/30"
-    }`}
-  >
-    <span>⚖️</span>
-    Weight{" "}
-    {sortBy === "weight" && (sortOrder === "a-z" ? "↑" : "↓")}
-  </motion.button>
-</motion.div>
+                <motion.button
+                  whileHover={buttonHoverAnimation}
+                  whileTap={buttonTapAnimation}
+                  onClick={() => toggleSort("weight")}
+                  className={`px-6 py-3 rounded-xl text-sm font-medium transition-all flex items-center gap-2 backdrop-blur-sm border w-1/2 sm:w-auto justify-center ${
+                    sortBy === "weight"
+                      ? "bg-linear-to-r from-amber-600 to-amber-700 text-white border-amber-500 shadow-lg shadow-amber-500/30"
+                      : "bg-gray-900/50 text-gray-300 border-gray-700 hover:bg-gray-800/50 hover:border-amber-400/30"
+                  }`}
+                >
+                  <span>⚖️</span>
+                  Weight{" "}
+                  {sortBy === "weight" && (sortOrder === "a-z" ? "↑" : "↓")}
+                </motion.button>
+              </motion.div>
             </motion.div>
 
             {/* Active Filters Indicator - Enhanced */}
@@ -456,22 +450,9 @@ export default function ProductCollectionPage({
                 className="text-center py-24 px-4"
               >
                 <div className="inline-block rounded-2xl bg-linear-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-sm border border-gray-700/50">
-                  <motion.div
-                    animate={{
-                      rotate: [0, 10, -10, 10, 0],
-                      scale: [1, 1.1, 1, 1.1, 1],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      repeatDelay: 1,
-                    }}
-                    className="text-6xl mb-4"
-                  >
-                    {emptyStateEmoji}
-                  </motion.div>
                   <p className="text-gray-400 text-xl mb-2">
-                    {emptyStateMessage}
+                    {/* {emptyStateMessage} */}
+                    No product found matching your criteria
                   </p>
                   <p className="text-gray-500 text-sm">
                     Try adjusting your search or filters
