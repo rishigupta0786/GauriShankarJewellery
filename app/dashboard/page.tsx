@@ -6,14 +6,18 @@ import {
   FiPlus,
   FiLogOut,
   FiTrash2,
-  FiImage,
   FiUpload,
   FiX,
   FiEdit2,
   FiChevronRight,
   FiPackage,
   FiEye,
+  FiGrid,
+  FiImage,
+  FiFileText,
 } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
+
 interface CatalogueItem {
   _id: string;
   title: string;
@@ -34,7 +38,7 @@ export default function DashboardPage() {
   const [fetching, setFetching] = useState(true);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
-  const [form, setForm] = useState({ title: "", subtitle: "", imageUrl: "" });
+  const [form, setForm] = useState({ title: "", subtitle: "" });
 
   // Fetch items on component mount
   useEffect(() => {
@@ -75,8 +79,8 @@ export default function DashboardPage() {
     setForm({
       title: item.title,
       subtitle: item.subtitle,
-      imageUrl: item.imageUrl,
     });
+    setPreviewUrl(item.imageUrl);
     setIsOpen(true);
   };
 
@@ -148,7 +152,7 @@ export default function DashboardPage() {
     setLoading(true);
 
     try {
-      let imageUrl = form.imageUrl;
+      let imageUrl = "";
 
       // If a file is selected, upload it to Cloudinary
       if (selectedFile) {
@@ -159,6 +163,9 @@ export default function DashboardPage() {
           setLoading(false);
           return;
         }
+      } else if (isEditMode && !selectedFile && previewUrl && !previewUrl.startsWith('blob:')) {
+        // In edit mode, keep the existing image if no new file is selected
+        imageUrl = previewUrl;
       }
 
       if (isEditMode && editingId) {
@@ -173,13 +180,13 @@ export default function DashboardPage() {
         });
 
         if (res.ok) {
-          alert("Item updated successfully!");
+          alert("Category updated successfully!");
           setIsOpen(false);
           resetForm();
           fetchItems();
         } else {
           const error = await res.json();
-          alert(error.error || "Error updating item!");
+          alert(error.error || "Error updating category!");
         }
       } else {
         // Create new item
@@ -193,24 +200,24 @@ export default function DashboardPage() {
         });
 
         if (res.ok) {
-          alert("Item added successfully!");
+          alert("Category added successfully!");
           setIsOpen(false);
           resetForm();
           fetchItems();
         } else {
           const error = await res.json();
-          alert(error.error || "Error adding item!");
+          alert(error.error || "Error adding category!");
         }
       }
     } catch (error) {
-      alert("Failed to save item!");
+      alert("Failed to save category!");
     } finally {
       setLoading(false);
     }
   };
 
   const resetForm = () => {
-    setForm({ title: "", subtitle: "", imageUrl: "" });
+    setForm({ title: "", subtitle: "" });
     setSelectedFile(null);
     setPreviewUrl("");
     setIsEditMode(false);
@@ -234,10 +241,10 @@ export default function DashboardPage() {
         alert("Catalogue category deleted!");
         fetchItems();
       } else {
-        alert("Error deleting item!");
+        alert("Error deleting category!");
       }
     } catch (error) {
-      alert("Failed to delete item!");
+      alert("Failed to delete category!");
     }
   };
 
@@ -246,350 +253,466 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Admin Dashboard
-            </h1>
-            <p className="text-gray-500 text-sm mt-1">
-              Manage catalogue categories
-            </p>
+    <div className="min-h-screen bg-linear-to-br from-gray-900 via-gray-900 to-black pt-20">
+      {/* Modern Dark Header */}
+      <header className="sticky top-0 z-40 bg-gray-900/90 backdrop-blur-md border-b border-gray-800/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-linear-to-br from-amber-500 to-amber-600 rounded-xl shadow-lg shadow-amber-500/20">
+                <FiGrid className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-white tracking-tight">
+                  Collection Manager
+                </h1>
+                <p className="text-sm text-gray-400">
+                  Manage your jewellery collections
+                </p>
+              </div>
+            </div>
+            
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-4 py-2.5 bg-linear-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all shadow-lg hover:shadow-red-500/25"
+            >
+              <FiLogOut className="w-4 h-4" />
+              <span className="font-medium">Sign Out</span>
+            </motion.button>
           </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-          >
-            <FiLogOut />
-            Logout
-          </button>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        {/* Header with Add Button */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-800">
-              Catalogue Categories
-            </h2>
-            <p className="text-gray-500 text-sm">
-              Click on a category to manage its items
-            </p>
-          </div>
-          <button
-            onClick={() => {
-              resetForm();
-              setIsOpen(true);
-            }}
-            className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md"
-          >
-            <FiPlus className="text-lg" />
-            Add New Category
-          </button>
-        </div>
-
-        {/* Cards Grid */}
-        {fetching ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="text-center">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-              <p className="mt-4 text-gray-500">Loading categories...</p>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Dashboard Header */}
+        <div className="mb-10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-3xl font-bold text-white tracking-tight">
+                Catalogue Collections
+              </h2>
+              <p className="text-gray-400 mt-2">
+                Create and manage beautiful jewellery collections
+              </p>
             </div>
-          </div>
-        ) : items.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-xl shadow-sm border">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-              <FiPackage className="text-2xl text-gray-400" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No categories yet
-            </h3>
-            <p className="text-gray-500 mb-6">
-              Create your first catalogue category to get started
-            </p>
-            <button
+            
+            <motion.button
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => {
                 resetForm();
                 setIsOpen(true);
               }}
-              className="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              className="group flex items-center gap-3 px-6 py-3.5 bg-linear-to-r from-amber-600 to-amber-700 text-white rounded-xl hover:from-amber-700 hover:to-amber-800 transition-all shadow-xl hover:shadow-amber-500/30"
             >
-              Add First Category
-            </button>
+              <div className="relative">
+                <FiPlus className="w-5 h-5 transition-transform group-hover:rotate-90" />
+                <div className="absolute inset-0 bg-white/20 rounded-full blur-sm"></div>
+              </div>
+              <span className="font-semibold">New Collection</span>
+            </motion.button>
           </div>
+        </div>
+
+        {/* Collections Grid */}
+        {fetching ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="relative">
+              <div className="w-16 h-16 border-4 border-amber-600/20 border-t-amber-600 rounded-full animate-spin"></div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <FiPackage className="w-8 h-8 text-amber-600 animate-pulse" />
+              </div>
+            </div>
+            <p className="mt-6 text-lg font-medium text-gray-300">Loading collections...</p>
+            <p className="text-gray-500">Preparing your beautiful catalogue</p>
+          </div>
+        ) : items.length === 0 ? (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-24 bg-linear-to-br from-gray-800/50 to-gray-900/50 rounded-3xl border-2 border-dashed border-gray-700/50 backdrop-blur-sm"
+          >
+            <div className="inline-flex items-center justify-center w-24 h-24 bg-linear-to-br from-amber-900/20 to-amber-800/20 rounded-3xl mb-6">
+              <FiPackage className="text-4xl text-amber-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-3">
+              No collections yet
+            </h3>
+            <p className="text-gray-400 max-w-md mx-auto mb-8">
+              Start by creating your first jewellery collection to showcase your products
+            </p>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                resetForm();
+                setIsOpen(true);
+              }}
+              className="px-8 py-3.5 bg-linear-to-r from-amber-600 to-amber-700 text-white font-semibold rounded-xl hover:from-amber-700 hover:to-amber-800 transition-all shadow-lg hover:shadow-amber-500/20"
+            >
+              Create First Collection
+            </motion.button>
+          </motion.div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
             {items.map((item) => (
-              <div
+              <motion.div
                 key={item._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileHover={{ y: -8, transition: { duration: 0.2 } }}
                 onClick={() => handleCardClick(item._id, item.title)}
-                className="group bg-white rounded-xl shadow-sm border overflow-hidden hover:shadow-md transition-all duration-300 hover:border-blue-300 cursor-pointer"
+                className="group bg-linear-to-br from-gray-800/50 to-gray-900/50 rounded-2xl overflow-hidden border border-gray-700/50 hover:border-amber-500/30 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 cursor-pointer backdrop-blur-sm"
               >
-                {/* Image Section */}
-                <div className="h-48 bg-gray-100 relative overflow-hidden">
+                {/* Image Section with Gradient Overlay */}
+                <div className="relative h-56 overflow-hidden bg-linear-to-br from-gray-800 to-gray-900">
                   {item.imageUrl ? (
                     <img
                       src={item.imageUrl}
                       alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src =
-                          'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200"><rect width="400" height="200" fill="%23f3f4f6"/><text x="200" y="100" font-family="Arial" font-size="14" fill="%239ca3af" text-anchor="middle">No Image</text></svg>';
+                          'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23d97706;stop-opacity:0.1" /><stop offset="100%" style="stop-color:%23b45309;stop-opacity:0.1" /></linearGradient></defs><rect width="400" height="300" fill="url(%23grad)"/></svg>';
                       }}
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-gray-100 to-gray-200">
-                      <FiPackage className="text-5xl text-gray-400" />
+                    <div className="w-full h-full flex items-center justify-center">
+                      <div className="text-center">
+                        <FiPackage className="w-16 h-16 text-gray-600 mx-auto mb-3" />
+                        <p className="text-gray-500 text-sm">No image</p>
+                      </div>
                     </div>
                   )}
-
+                  
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  
                   {/* Action Buttons */}
-                  <div className="absolute top-3 right-3 flex gap-2">
-                    <button
+                  <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                       onClick={(e) => handleEditClick(item, e)}
-                      className="p-2 bg-white text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-lg shadow-sm transition"
-                      title="Edit category"
+                      className="p-2.5 bg-gray-900/90 backdrop-blur-sm text-amber-400 hover:text-amber-300 hover:bg-gray-800 rounded-xl shadow-lg transition border border-gray-700"
+                      title="Edit collection"
                     >
-                      <FiEdit2 />
-                    </button>
-                    <button
+                      <FiEdit2 className="w-4 h-4" />
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                       onClick={(e) => handleDelete(item._id, e)}
-                      className="p-2 bg-white text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg shadow-sm transition"
-                      title="Delete category"
+                      className="p-2.5 bg-gray-900/90 backdrop-blur-sm text-red-400 hover:text-red-300 hover:bg-gray-800 rounded-xl shadow-lg transition border border-gray-700"
+                      title="Delete collection"
                     >
-                      <FiTrash2 />
-                    </button>
+                      <FiTrash2 className="w-4 h-4" />
+                    </motion.button>
                   </div>
                 </div>
 
                 {/* Content Section */}
-                <div className="p-5">
-                  <div className="flex items-start justify-between">
+                <div className="p-6">
+                  <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 text-lg mb-2 group-hover:text-blue-600 transition-colors">
+                      <h3 className="font-bold text-white text-xl mb-2 group-hover:text-amber-400 transition-colors line-clamp-1">
                         {item.title}
                       </h3>
-                      <p className="text-gray-600 text-sm line-clamp-2">
+                      <p className="text-gray-400 text-sm line-clamp-2">
                         {item.subtitle}
                       </p>
                     </div>
-                    <FiChevronRight className="text-gray-400 group-hover:text-blue-500 transition-colors ml-2 mt-1" />
+                    <div className="ml-3">
+                      <div className="p-2 bg-linear-to-br from-amber-900/20 to-amber-800/20 rounded-lg group-hover:from-amber-800/30 group-hover:to-amber-700/30 transition-colors border border-amber-800/20">
+                        <FiChevronRight className="w-4 h-4 text-amber-500 group-hover:text-amber-400 transition-colors" />
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-gray-400 pt-4 border-t mt-4">
-                    <div className="flex items-center gap-2">
-                      <FiEye className="text-gray-400" />
-                      <span>Click to view items</span>
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-800">
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <FiEye className="w-3 h-3" />
+                      <span>View Products</span>
                     </div>
-                    <span className="px-2 py-1 bg-gray-100 rounded text-xs">
+                    <div className="px-3 py-1.5 bg-gray-800 rounded-lg text-xs text-gray-300 font-medium">
                       {new Date(item.createdAt).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
                       })}
-                    </span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </main>
 
-      {/* Add/Edit Item Modal */}
-      {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-gray-900">
-                  {isEditMode ? "Edit Category" : "Add New Category"}
-                </h2>
-                <button
-                  onClick={() => {
-                    setIsOpen(false);
-                    resetForm();
-                  }}
-                  className="text-gray-500 hover:text-gray-700 text-2xl"
-                >
-                  ×
-                </button>
-              </div>
+      {/* Modern Dark Elegant Modal */}
+      <AnimatePresence>
+        {isOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                setIsOpen(false);
+                resetForm();
+              }}
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            />
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Title Field */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Category Name *
-                  </label>
-                  <input
-                    name="title"
-                    value={form.title}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                    placeholder="e.g., Bangle Collection"
-                  />
-                </div>
-
-                {/* Subtitle Field */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description *
-                  </label>
-                  <input
-                    name="subtitle"
-                    value={form.subtitle}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                    placeholder="e.g., Beautiful collection of traditional bangles"
-                  />
-                </div>
-
-                {/* Image Upload Section */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Category Image
-                  </label>
-
-                  {/* File Upload Area */}
-                  <div
-                    className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all ${
-                      selectedFile || previewUrl
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-300 hover:border-blue-400 hover:bg-gray-50"
-                    }`}
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileSelect}
-                      className="hidden"
-                    />
-
-                    {selectedFile || previewUrl ? (
-                      <div className="space-y-4">
-                        <div className="relative mx-auto w-48 h-32">
-                          <img
-                            src={previewUrl || form.imageUrl}
-                            alt="Preview"
-                            className="w-full h-full object-cover rounded"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src =
-                                'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="300" height="200" fill="%23f3f4f6"/><text x="150" y="100" font-family="Arial" font-size="14" fill="%239ca3af" text-anchor="middle">Image preview</text></svg>';
-                            }}
-                          />
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRemoveFile();
-                            }}
-                            className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-                          >
-                            <FiX className="text-sm" />
-                          </button>
-                        </div>
-                        {selectedFile && (
-                          <div className="text-sm text-gray-600">
-                            <p className="font-medium truncate">
-                              {selectedFile.name}
-                            </p>
-                            <p className="text-gray-500">
-                              {(selectedFile.size / 1024).toFixed(2)} KB
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
-                          <FiUpload className="text-xl text-blue-600" />
-                        </div>
-                        <div>
-                          <p className="text-gray-700 font-medium">
-                            Click to upload image
-                          </p>
-                          <p className="text-gray-500 text-sm mt-1">
-                            JPG, PNG, GIF up to 5MB
-                          </p>
-                        </div>
-                      </div>
-                    )}
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative z-10 w-full max-w-2xl bg-linear-to-br from-gray-800 to-gray-900 rounded-3xl overflow-hidden shadow-2xl border border-gray-700/50"
+            >
+              {/* Modal Header */}
+              <div className="relative p-8 border-b border-gray-700/50">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-amber-500 via-amber-600 to-amber-700"></div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-linear-to-br from-amber-500 to-amber-600 rounded-xl shadow-lg shadow-amber-500/30">
+                      {isEditMode ? (
+                        <FiEdit2 className="w-6 h-6 text-white" />
+                      ) : (
+                        <FiPlus className="w-6 h-6 text-white" />
+                      )}
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-white">
+                        {isEditMode ? "Edit Collection" : "Create New Collection"}
+                      </h2>
+                      <p className="text-gray-400 mt-1">
+                        {isEditMode 
+                          ? "Update your collection details" 
+                          : "Add a new jewellery collection to your catalogue"
+                        }
+                      </p>
+                    </div>
                   </div>
-
-                  {/* OR Separator */}
-                  <div className="flex items-center my-4">
-                    <div className="flex-1 border-t border-gray-300"></div>
-                    <span className="px-3 text-gray-500 text-sm">OR</span>
-                    <div className="flex-1 border-t border-gray-300"></div>
-                  </div>
-
-                  {/* Direct URL Input */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Or enter image URL
-                    </label>
-                    <input
-                      name="imageUrl"
-                      value={form.imageUrl}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                      placeholder="https://example.com/category-image.jpg"
-                    />
-                    <p className="text-xs text-gray-500 mt-2">
-                      Leave empty for default image
-                    </p>
-                  </div>
-                </div>
-
-                {/* Buttons */}
-                <div className="flex gap-3 pt-4">
-                  <button
-                    type="button"
+                  <motion.button
+                    whileHover={{ scale: 1.1, rotate: 90 }}
+                    whileTap={{ scale: 0.9 }}
                     onClick={() => {
                       setIsOpen(false);
                       resetForm();
                     }}
-                    className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium"
-                    disabled={loading || uploading}
+                    className="p-2.5 hover:bg-gray-700 rounded-xl transition-colors"
                   >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={loading || uploading}
-                    className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {uploading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        Uploading...
-                      </>
-                    ) : loading ? (
-                      isEditMode ? (
-                        "Updating..."
-                      ) : (
-                        "Adding..."
-                      )
-                    ) : isEditMode ? (
-                      "Update Category"
-                    ) : (
-                      "Add Category"
-                    )}
-                  </button>
+                    <FiX className="w-5 h-5 text-gray-400" />
+                  </motion.button>
                 </div>
-              </form>
-            </div>
+              </div>
+
+              {/* Modal Content */}
+              <div className="p-8 max-h-[70vh] overflow-y-auto">
+                <form onSubmit={handleSubmit} className="space-y-8">
+                  {/* Title Field */}
+                  <div className="space-y-3">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                      <FiFileText className="w-4 h-4" />
+                      Collection Name
+                    </label>
+                    <div className="relative">
+                      <input
+                        name="title"
+                        value={form.title}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-5 py-4 bg-gray-800/50 border-2 border-gray-700 rounded-xl focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 outline-none transition-all text-lg text-white placeholder-gray-500 backdrop-blur-sm"
+                        placeholder="Enter collection name"
+                      />
+                      <div className="absolute inset-0 rounded-xl bg-linear-to-r from-amber-500/5 to-amber-600/5 opacity-0 hover:opacity-100 transition-opacity pointer-events-none"></div>
+                    </div>
+                  </div>
+
+                  {/* Subtitle Field */}
+                  <div className="space-y-3">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                      <FiFileText className="w-4 h-4" />
+                      Description
+                    </label>
+                    <div className="relative">
+                      <input
+                        name="subtitle"
+                        value={form.subtitle}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-5 py-4 bg-gray-800/50 border-2 border-gray-700 rounded-xl focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 outline-none transition-all text-lg text-white placeholder-gray-500 backdrop-blur-sm"
+                        placeholder="Describe your collection"
+                      />
+                      <div className="absolute inset-0 rounded-xl bg-linear-to-r from-amber-500/5 to-amber-600/5 opacity-0 hover:opacity-100 transition-opacity pointer-events-none"></div>
+                    </div>
+                  </div>
+
+                  {/* Image Upload Section */}
+                  <div className="space-y-3">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                      <FiImage className="w-4 h-4" />
+                      Collection Image
+                    </label>
+                    
+                    {/* File Upload Card */}
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      className={`relative rounded-2xl border-3 border-dashed transition-all cursor-pointer overflow-hidden group ${
+                        selectedFile || previewUrl
+                          ? "border-amber-500 bg-linear-to-br from-amber-900/20 to-amber-800/20"
+                          : "border-gray-700 hover:border-amber-500/50 hover:bg-gray-800/30"
+                      }`}
+                    >
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileSelect}
+                        className="hidden"
+                      />
+
+                      {selectedFile || previewUrl ? (
+                        <div className="p-8">
+                          <div className="relative max-w-md mx-auto">
+                            <div className="relative h-64 rounded-xl overflow-hidden shadow-2xl">
+                              <img
+                                src={previewUrl}
+                                alt="Preview"
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src =
+                                    'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23d97706;stop-opacity:0.2" /><stop offset="100%" style="stop-color:%23b45309;stop-opacity:0.2" /></linearGradient></defs><rect width="600" height="400" fill="url(%23grad)"/></svg>';
+                                }}
+                              />
+                              <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent"></div>
+                            </div>
+                            
+                            {selectedFile && (
+                              <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mt-4 bg-gray-800/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-gray-700"
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <p className="font-medium text-white truncate">
+                                      {selectedFile.name}
+                                    </p>
+                                    <p className="text-sm text-gray-400 mt-1">
+                                      {(selectedFile.size / 1024).toFixed(2)} KB
+                                    </p>
+                                  </div>
+                                  <motion.button
+                                    type="button"
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleRemoveFile();
+                                    }}
+                                    className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                                  >
+                                    <FiX className="w-4 h-4" />
+                                  </motion.button>
+                                </div>
+                              </motion.div>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="p-12 text-center">
+                          <div className="inline-flex items-center justify-center w-20 h-20 bg-linear-to-br from-amber-900/30 to-amber-800/30 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300 border border-amber-800/20">
+                            <FiUpload className="w-8 h-8 text-amber-500" />
+                          </div>
+                          <div>
+                            <p className="text-lg font-semibold text-white mb-2">
+                              Drop or click to upload
+                            </p>
+                            <p className="text-gray-400 mb-4">
+                              Upload a beautiful image for your collection
+                            </p>
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-lg text-sm text-gray-300 border border-gray-700">
+                              <span>JPG, PNG, GIF</span>
+                              <span className="text-gray-600">•</span>
+                              <span>Max 5MB</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {isEditMode && previewUrl && !selectedFile && (
+                      <p className="text-sm text-gray-400 text-center mt-4">
+                        Current image will be retained. Upload a new image to replace it.
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-4 pt-8">
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        setIsOpen(false);
+                        resetForm();
+                      }}
+                      disabled={loading || uploading}
+                      className="flex-1 px-6 py-4 bg-gray-800 border-2 border-gray-700 text-gray-300 rounded-xl hover:border-gray-600 hover:bg-gray-700 transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Cancel
+                    </motion.button>
+                    
+                    <motion.button
+                      type="submit"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      disabled={loading || uploading}
+                      className="flex-1 px-6 py-4 bg-linear-to-r from-amber-600 to-amber-700 text-white rounded-xl hover:from-amber-700 hover:to-amber-800 transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-amber-500/20 flex items-center justify-center gap-3"
+                    >
+                      {uploading ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          Uploading Image...
+                        </>
+                      ) : loading ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          {isEditMode ? "Updating..." : "Creating..."}
+                        </>
+                      ) : isEditMode ? (
+                        <>
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          Update Collection
+                        </>
+                      ) : (
+                        <>
+                          <FiPlus className="w-5 h-5" />
+                          Create Collection
+                        </>
+                      )}
+                    </motion.button>
+                  </div>
+                </form>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </div>
   );
 }

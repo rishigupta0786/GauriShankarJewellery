@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
-import { FiArrowLeft, FiPlus } from "react-icons/fi";
+import { FiArrowLeft, FiPlus, FiSearch, FiX } from "react-icons/fi";
+import { RiDashboardFill } from "react-icons/ri";
 import ItemCard from "@/components/ItemCard";
 import ItemViewModal from "@/components/ItemViewModal";
 import ItemFormModal from "@/components/ItemFormModal";
@@ -46,6 +47,7 @@ export default function CatalogueItemsPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [selectedFiles, setSelectedFiles] = useState<{
     main: File | null;
@@ -112,7 +114,10 @@ export default function CatalogueItemsPage() {
     setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
-  const handleFileSelect = (type: "main" | "side1" | "side2" | "side3", file: File | null) => {
+  const handleFileSelect = (
+    type: "main" | "side1" | "side2" | "side3",
+    file: File | null,
+  ) => {
     setSelectedFiles((prev) => ({ ...prev, [type]: file }));
     if (file) {
       const url = URL.createObjectURL(file);
@@ -125,12 +130,17 @@ export default function CatalogueItemsPage() {
     setPreviewUrls((prev) => ({ ...prev, [type]: "" }));
   };
 
-  const uploadImageToCloudinary = async (file: File | null): Promise<string> => {
+  const uploadImageToCloudinary = async (
+    file: File | null,
+  ): Promise<string> => {
     if (!file) return "";
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const response = await fetch("/api/upload", { method: "POST", body: formData });
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Upload failed");
       return data.url;
@@ -191,9 +201,9 @@ export default function CatalogueItemsPage() {
       for (const type of imageTypes) {
         if (selectedFiles[type]) {
           uploadPromises.push(
-            uploadImageToCloudinary(selectedFiles[type]).then(url => {
+            uploadImageToCloudinary(selectedFiles[type]).then((url) => {
               uploadResults[type] = url;
-            })
+            }),
           );
         }
       }
@@ -202,11 +212,15 @@ export default function CatalogueItemsPage() {
 
       // Use existing URLs for edit mode if no new file uploaded
       if (isEditMode && editingItemId) {
-        const existingItem = items.find(item => item._id === editingItemId);
-        if (!uploadResults.main && existingItem) uploadResults.main = existingItem.imageUrl;
-        if (!uploadResults.side1 && existingItem?.gallery) uploadResults.side1 = existingItem.gallery.side1;
-        if (!uploadResults.side2 && existingItem?.gallery) uploadResults.side2 = existingItem.gallery.side2;
-        if (!uploadResults.side3 && existingItem?.gallery) uploadResults.side3 = existingItem.gallery.side3;
+        const existingItem = items.find((item) => item._id === editingItemId);
+        if (!uploadResults.main && existingItem)
+          uploadResults.main = existingItem.imageUrl;
+        if (!uploadResults.side1 && existingItem?.gallery)
+          uploadResults.side1 = existingItem.gallery.side1;
+        if (!uploadResults.side2 && existingItem?.gallery)
+          uploadResults.side2 = existingItem.gallery.side2;
+        if (!uploadResults.side3 && existingItem?.gallery)
+          uploadResults.side3 = existingItem.gallery.side3;
       }
 
       const itemData: any = {
@@ -296,7 +310,9 @@ export default function CatalogueItemsPage() {
     setEditingItemId(null);
   };
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleFormChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -306,76 +322,223 @@ export default function CatalogueItemsPage() {
       item.gallery?.side1,
       item.gallery?.side2,
       item.gallery?.side3,
-    ].filter(img => img && img.trim() !== "");
+    ].filter((img) => img && img.trim() !== "");
   };
+
+  const filteredItems = items.filter(
+    (item) =>
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.articleCode.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   if (fetching) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-slate-900 via-slate-950 to-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-500">Loading...</p>
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-transparent border-t-emerald-400 border-r-violet-400 rounded-full animate-spin"></div>
+            <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-b-violet-400 border-l-emerald-400 rounded-full animate-spin animate-reverse"></div>
+          </div>
+          <p className="mt-6 text-slate-300 font-light tracking-wider">
+            Loading Collection...
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-4">
+    <div className="min-h-screen bg-linear-to-br from-slate-900 via-slate-950 to-slate-900">
+      {/* Header with Sophisticated Design */}
+      <header className="relative overflow-hidden bg-linear-to-r from-slate-900 via-slate-950 to-slate-900 border-b border-slate-700/50 shadow-2xl">
+        <div className="absolute inset-0 bg-[radial-linear(ellipse_at_top,var(--tw-linear-stops))] from-emerald-500/5 via-transparent to-transparent"></div>
+        <div className="relative max-w-7xl mx-auto px-4 py-2 lg:px-8">
+          {/* Centered Title for all screen sizes */}
+          <div className="text-center mb-4 pt-18">
+            <h1 className="text-7xl p-2 allura-regular font-bold bg-linear-to-r from-emerald-300 via-violet-300 to-emerald-300 bg-clip-text text-transparent tracking-wide drop-shadow-[0_2px_8px_rgba(139,92,246,0.3)]">
+              {categoryTitle}
+            </h1>
+            <p className="text-slate-400 font-light tracking-wider text-2xl allura-regular">
+              Premium Jewelry Collection
+            </p>
+          </div>
+
+          {/* Desktop Layout - All in one line */}
+          <div className="hidden md:flex items-center justify-between gap-4 mb-4">
+            {/* Back to Dashboard Button - Left side */}
             <button
               onClick={() => router.push("/dashboard")}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+              className="group relative flex items-center gap-3 px-5 py-3 bg-slate-800/30 backdrop-blur-sm rounded-xl border border-slate-600/50 hover:border-emerald-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] overflow-hidden shrink-0"
             >
-              <FiArrowLeft />
-              Back to Dashboard
+              <div className="absolute inset-0 bg-linear-to-r from-emerald-500/0 via-emerald-500/5 to-emerald-500/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+              <FiArrowLeft className="text-emerald-400 text-lg group-hover:text-emerald-300 transition-colors" />
+              <span className="text-slate-300 font-medium tracking-wide group-hover:text-white transition-colors whitespace-nowrap">
+                Back to Dashboard
+              </span>
             </button>
-            <div className="h-6 w-px bg-gray-300"></div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{categoryTitle}</h1>
-              <p className="text-gray-500 text-sm">Manage jewelry items</p>
+
+            {/* Search Bar - Center */}
+            <div className="flex-1 max-w-2xl">
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-linear-to-r from-emerald-500/10 to-violet-500/10 rounded-xl group-hover:opacity-100 transition duration-300"></div>
+                <div className="relative">
+                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400  z-10">
+                    <FiSearch className="text-lg" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search items by name, description, or code..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-12 pr-10 py-3.5 bg-slate-800/40 backdrop-blur-sm border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_20px_rgba(16,185,129,0.1)] transition-all text-base"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-white transition-colors p-1 rounded-full hover:bg-slate-700/50"
+                    >
+                      <FiX className="text-lg" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Add New Item Button - Right side */}
+            <button
+              onClick={handleAddItem}
+              className="group relative px-7 py-3.5 bg-linear-to-r from-emerald-600 via-emerald-500 to-violet-600 text-white font-semibold rounded-xl hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all duration-300 hover:scale-105 overflow-hidden shrink-0"
+            >
+              <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+              <div className="flex items-center gap-3 relative">
+                <div className="p-.5 bg-white/10 rounded-sm group-hover:rotate-90 transition-transform duration-300">
+                  <FiPlus className="text-xl" />
+                </div>
+                <span className="tracking-wide whitespace-nowrap">Add New Item</span>
+              </div>
+            </button>
+          </div>
+
+          {/* Mobile Layout - Back button and Add button in same line, Search at bottom */}
+          <div className="md:hidden flex flex-col gap-3">
+            {/* Top Row - Back button and Add button */}
+            <div className="flex items-center justify-between gap-3">
+              {/* Back to Dashboard Button */}
+              <button
+                onClick={() => router.push("/dashboard")}
+                className="group relative flex items-center justify-center gap-2 px-4 py-3 bg-slate-800/30 backdrop-blur-sm rounded-xl border border-slate-600/50 hover:border-emerald-500/50 transition-all duration-300 hover:shadow-[0_0_15px_rgba(16,185,129,0.2)] overflow-hidden flex-1"
+              >
+                <div className="absolute inset-0 bg-linear-to-r from-emerald-500/0 via-emerald-500/5 to-emerald-500/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                <FiArrowLeft className="text-emerald-400 text-base group-hover:text-emerald-300 transition-colors" />
+                <span className="text-slate-300 font-medium tracking-wide group-hover:text-white transition-colors text-sm">
+                 Dashboard
+                </span>
+              </button>
+
+              {/* Add New Item Button */}
+              <button
+                onClick={handleAddItem}
+                className="group relative px-4 py-3 bg-linear-to-r from-emerald-600 via-emerald-500 to-violet-600 text-white font-semibold rounded-xl hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all duration-300 hover:scale-105 overflow-hidden flex-1"
+              >
+                <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                <div className="flex items-center justify-center gap-2 relative">
+                  <div className="p-.5 bg-white/10 rounded-sm group-hover:rotate-90 transition-transform duration-300">
+                    <FiPlus className="text-base" />
+                  </div>
+                  <span className="tracking-wide text-sm">Add Item</span>
+                </div>
+              </button>
+            </div>
+
+            {/* Bottom Row - Search bar */}
+            <div className="w-full">
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-linear-to-r from-emerald-500/10 to-violet-500/10 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                <div className="relative">
+                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 z-10">
+                    <FiSearch className="text-base" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search items..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-10 py-3 bg-slate-800/40 backdrop-blur-sm border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500/50 focus:shadow-[0_0_15px_rgba(16,185,129,0.1)] transition-all text-sm"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-white transition-colors p-1 rounded-full hover:bg-slate-700/50"
+                    >
+                      <FiX className="text-base" />
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        {/* Add Button */}
-        <div className="mb-8">
-          <button
-            onClick={handleAddItem}
-            className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-          >
-            <FiPlus />
-            Add New Item
-          </button>
-        </div>
-
-        {/* Items Grid */}
-        {items.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-xl shadow-sm">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-              <FiPlus className="text-2xl text-gray-400" />
+      <main className="max-w-7xl mx-auto px-4 py-2">
+        {/* Items Grid with Luxury Hover Effects */}
+        {filteredItems.length === 0 ? (
+          <div className="text-center py-16 md:py-24 bg-linear-to-br from-slate-800/20 to-slate-900/40 backdrop-blur-sm rounded-2xl border border-slate-700/30 shadow-2xl">
+            <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-linear-to-br from-emerald-900/20 to-violet-900/20 rounded-full mb-6 border border-emerald-500/20 shadow-lg">
+              <div className="relative">
+                <FiPlus className="text-2xl md:text-3xl text-emerald-400" />
+                <div className="absolute -inset-3 md:-inset-4 bg-emerald-500/10 rounded-full blur-xl"></div>
+              </div>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No items yet</h3>
-            <p className="text-gray-500 mb-6">Add your first jewelry item to this category</p>
+            <h3 className="text-xl md:text-2xl font-semibold text-white mb-3">
+              No Items Found
+            </h3>
+            <p className="text-slate-400 mb-8 max-w-md mx-auto px-4 text-sm md:text-base">
+              {searchQuery
+                ? "No items match your search. Try different keywords."
+                : "Begin your luxury collection by adding exquisite jewelry pieces."}
+            </p>
             <button
               onClick={handleAddItem}
-              className="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              className="px-6 md:px-8 py-3 md:py-3.5 bg-linear-to-r from-emerald-600 to-violet-700 text-white font-medium rounded-xl hover:shadow-[0_0_25px_rgba(16,185,129,0.2)] hover:scale-105 transition-all duration-300 text-sm md:text-base"
             >
-              Add First Item
+              Add First Masterpiece
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {items.map((item) => (
-              <ItemCard key={item._id} item={item} onClick={() => handleCardClick(item)} />
-            ))}
-          </div>
+          <>
+            <div className="flex items-center justify-between mb-6">
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="text-slate-400 hover:text-white transition-colors text-sm flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-800/50"
+                >
+                  <FiX className="text-sm" />
+                  Clear search
+                </button>
+              )}
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
+              {filteredItems.map((item) => (
+                <div
+                  key={item._id}
+                  className="group relative transform transition-all duration-500 hover:scale-[1.02]"
+                >
+                  {/* Glow Effect Container */}
+                  <div className="absolute -inset-1 md:-inset-2 bg-linear-to-r from-emerald-500/10 via-violet-500/10 to-emerald-500/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
+                  {/* Card Container */}
+                  <div className="relative bg-linear-to-br from-slate-800/60 to-slate-900/80 backdrop-blur-sm rounded-xl border border-slate-700/50 hover:border-emerald-500/30 shadow-2xl overflow-hidden transition-all duration-500 group-hover:shadow-[0_20px_50px_rgba(16,185,129,0.1)]">
+                    <ItemCard
+                      item={item}
+                      onClick={() => handleCardClick(item)}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </main>
 
@@ -397,7 +560,7 @@ export default function CatalogueItemsPage() {
       {showAddEditModal && (
         <ItemFormModal
           isEditMode={isEditMode}
-          editingItem={items.find(item => item._id === editingItemId) || null}
+          editingItem={items.find((item) => item._id === editingItemId) || null}
           formData={form}
           previewUrls={previewUrls}
           loading={loading}
