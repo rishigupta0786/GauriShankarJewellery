@@ -119,7 +119,7 @@ export default function CatalogueItemPage() {
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400"></div>
-          <p className="mt-4 text-amber-200">Loading collection...</p>
+          <p className="mt-4 text-amber-200 allura-regular text-5xl ">Loading collection...</p>
         </div>
       </div>
     );

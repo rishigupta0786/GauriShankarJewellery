@@ -18,7 +18,6 @@ interface ItemDetail {
   _id: string;
   name: string;
   description: string;
-  price: number;
   imageUrl: string;
   categoryId: string;
   createdAt: string;
@@ -71,7 +70,6 @@ export default function CatalogueItemsPage() {
   const [form, setForm] = useState({
     name: "",
     description: "",
-    price: "",
     articleCode: "",
     grossWeight: "",
     netWeight: "",
@@ -164,7 +162,6 @@ export default function CatalogueItemsPage() {
     setForm({
       name: item.name,
       description: item.description,
-      price: item.price.toString(),
       articleCode: item.articleCode || "",
       grossWeight: item.grossWeight || "",
       netWeight: item.netWeight || "",
@@ -226,7 +223,6 @@ export default function CatalogueItemsPage() {
       const itemData: any = {
         name: form.name,
         description: form.description,
-        price: parseFloat(form.price),
         categoryId,
         imageUrl: uploadResults.main,
         articleCode: form.articleCode,
@@ -297,7 +293,6 @@ export default function CatalogueItemsPage() {
     setForm({
       name: "",
       description: "",
-      price: "",
       articleCode: "",
       grossWeight: "",
       netWeight: "",
@@ -340,7 +335,7 @@ export default function CatalogueItemsPage() {
             <div className="w-16 h-16 border-4 border-transparent border-t-emerald-400 border-r-violet-400 rounded-full animate-spin"></div>
             <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-b-violet-400 border-l-emerald-400 rounded-full animate-spin animate-reverse"></div>
           </div>
-          <p className="mt-6 text-slate-300 font-light tracking-wider">
+          <p className="mt-6 allura-regular text-slate-300 font-light text-5xl tracking-wider">
             Loading Collection...
           </p>
         </div>

@@ -12,7 +12,6 @@ interface ItemDetail {
   _id: string;
   name: string;
   description: string;
-  price: number;
   imageUrl: string;
   articleCode: string;
   grossWeight: string;
@@ -28,7 +27,6 @@ interface ItemFormModalProps {
   formData: {
     name: string;
     description: string;
-    price: string;
     articleCode: string;
     grossWeight: string;
     netWeight: string;
@@ -73,8 +71,6 @@ export default function ItemFormModal({
     return (
       formData.name.trim() !== "" &&
       formData.description.trim() !== "" &&
-      formData.price.trim() !== "" &&
-      parseFloat(formData.price) > 0 &&
       formData.articleCode.trim() !== "" &&
       formData.grossWeight.trim() !== "" &&
       formData.netWeight.trim() !== "" &&
@@ -198,32 +194,6 @@ export default function ItemFormModal({
                     />
                     {touched.description && !formData.description.trim() && (
                       <p className="text-red-400 text-sm mt-2">Description is required</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-white mb-2">
-                      Price (₹) *
-                    </label>
-                    <div className="relative">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                        <FiDollarSign className="w-5 h-5 text-gray-400" />
-                      </div>
-                      <input
-                        name="price"
-                        type="number"
-                        value={formData.price}
-                        onChange={onFormChange}
-                        onBlur={() => handleBlur("price")}
-                        required
-                        step="0.01"
-                        min="0.01"
-                        className="w-full pl-12 pr-4 py-3 bg-gray-900/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-500 transition-all"
-                        placeholder="0.00"
-                      />
-                    </div>
-                    {touched.price && (!formData.price.trim() || parseFloat(formData.price) <= 0) && (
-                      <p className="text-red-400 text-sm mt-2">Valid price is required</p>
                     )}
                   </div>
                 </div>

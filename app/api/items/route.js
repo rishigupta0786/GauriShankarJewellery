@@ -5,7 +5,6 @@ import mongoose from 'mongoose';
 const itemSchema = new mongoose.Schema({
   name: String,
   description: String,
-  price: Number,
   imageUrl: String,
   categoryId: String,
   // New jewelry fields
@@ -56,9 +55,9 @@ export async function POST(request) {
     
     const body = await request.json();
     
-    if (!body.name || !body.description || !body.price) {
+    if (!body.name || !body.description ) {
       return NextResponse.json(
-        { error: "Name, description, and price are required" },
+        { error: "Name, description are required" },
         { status: 400 }
       );
     }
@@ -102,9 +101,9 @@ export async function PUT(request) {
       return NextResponse.json({ error: "Item ID is required" }, { status: 400 });
     }
     
-    if (!updateData.name || !updateData.description || !updateData.price) {
+    if (!updateData.name || !updateData.description) {
       return NextResponse.json(
-        { error: "Name, description, and price are required" },
+        { error: "Name and  description are required" },
         { status: 400 }
       );
     }

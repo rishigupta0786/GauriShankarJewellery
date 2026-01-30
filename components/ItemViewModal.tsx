@@ -21,7 +21,6 @@ interface ItemDetail {
   _id: string;
   name: string;
   description: string;
-  price: number;
   imageUrl: string;
   articleCode: string;
   grossWeight: string;
@@ -133,7 +132,7 @@ export default function ItemViewModal({
                       <img
                         src={images[currentImageIndex]}
                         alt={`${item.name} - view ${currentImageIndex + 1}`}
-                        className="w-full h-full object-contain"
+                        className="w-full h-full  object-contain"
                       />
                       
                       {/* Navigation */}
@@ -205,18 +204,6 @@ export default function ItemViewModal({
                     {item.articleCode}
                   </div>
                 </div>
-
-                {/* Price Card */}
-                <div className="bg-linear-to-r from-blue-900/30 to-blue-800/20 rounded-lg p-4 border border-blue-800/30">
-                  <div className="flex items-center gap-2 mb-2">
-                    <FiDollarSign className="w-4 h-4 text-blue-400" />
-                    <span className="text-blue-300 font-medium">Price</span>
-                  </div>
-                  <div className="text-2xl font-bold text-white">
-                    ₹{item.price.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                  </div>
-                </div>
-
                 {/* Description */}
                 <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
                   <div className="flex items-center gap-2 mb-3">

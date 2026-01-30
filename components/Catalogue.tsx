@@ -67,7 +67,7 @@ export default function Catalogue() {
 
         <div className="text-center py-40">
           <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-2 border-amber-400"></div>
-          <p className="mt-4 text-amber-200 allura-regular text-2xl">
+          <p className="mt-4 text-amber-200 allura-regular text-6xl allura-regular">
             Loading collections...
           </p>
         </div>

@@ -15,6 +15,10 @@ import {
   FiGrid,
   FiImage,
   FiFileText,
+  FiSettings,
+  FiStar,
+  FiTrendingUp,
+  FiShoppingBag,
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -254,68 +258,153 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-900 via-gray-900 to-black pt-20">
-      {/* Modern Dark Header */}
-      <header className="sticky top-0 z-40 bg-gray-900/90 backdrop-blur-md border-b border-gray-800/50">
+      {/* Modern Elegant Header */}
+      <header className=" top-0 z-40 bg-gray-900/95 backdrop-blur-xl border-b border-gray-800/30 shadow-2xl shadow-black/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-linear-to-br from-amber-500 to-amber-600 rounded-xl shadow-lg shadow-amber-500/20">
-                <FiGrid className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-white tracking-tight">
-                  Collection Manager
-                </h1>
-                <p className="text-sm text-gray-400">
-                  Manage your jewellery collections
-                </p>
-              </div>
-            </div>
-            
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2.5 bg-linear-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all shadow-lg hover:shadow-red-500/25"
+            {/* Left Section - Logo & Brand */}
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-4"
             >
-              <FiLogOut className="w-4 h-4" />
-              <span className="font-medium">Sign Out</span>
-            </motion.button>
+              {/* Animated Logo Container */}
+              <div className="relative">
+                <div className="absolute inset-0 bg-linear-to-br from-amber-500 to-amber-600 rounded-2xl blur-xl opacity-70"></div>
+                <div className="relative p-2.5 bg-linear-to-br from-amber-500 to-amber-600 rounded-2xl shadow-2xl shadow-amber-500/30 border border-amber-400/20">
+                  <FiShoppingBag className="w-6 h-6 text-white" />
+                </div>
+              </div>
+              
+              {/* Brand Text */}
+              <div>
+                <motion.h1 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.1 }}
+                  className="text-2xl font-bold bg-linear-to-r from-amber-300 via-amber-200 to-amber-300 bg-clip-text text-transparent allura-regular tracking-tight"
+                >
+                 Jewelry Collection
+                </motion.h1>
+                <motion.p 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className=" text-gray-400 allura-regular  font-light tracking-wider"
+                >
+                  Collection Management Portal
+                </motion.p>
+              </div>
+            </motion.div>
+            
+            {/* logoit button*/}
+            <div className="flex items-center gap-4">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleLogout}
+                className="group relative flex items-center gap-2.5 px-4 py-2.5 bg-linear-to-r from-gray-800 to-gray-900 text-gray-300 hover:text-white rounded-xl hover:bg-gray-700/50 transition-all border border-gray-700/50 hover:border-gray-600/50"
+              >
+                <div className="absolute inset-0 bg-linear-to-r from-red-600/0 via-red-600/5 to-red-600/0 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+                <FiLogOut className="w-4 h-4 relative z-10" />
+                <span className="font-medium text-sm relative z-10 hidden sm:inline">Sign Out</span>
+              </motion.button>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Dashboard Header */}
-        <div className="mb-10">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h2 className="text-3xl font-bold text-white tracking-tight">
-                Catalogue Collections
-              </h2>
-              <p className="text-gray-400 mt-2">
-                Create and manage beautiful jewellery collections
-              </p>
-            </div>
+        {/* Hero Dashboard Header */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative mb-12"
+        >
+          {/* Background Gradient Effects */}
+          <div className="absolute inset-0 bg-linear-to-r from-amber-900/5 via-transparent to-violet-900/5 rounded-3xl blur-3xl"></div>
+          
+          {/* Content Container */}
+          <div className="relative bg-linear-to-br from-gray-800/30 to-gray-900/20 backdrop-blur-xl rounded-3xl border border-gray-700/30 shadow-2xl shadow-black/20 overflow-hidden">
+            {/* Animated Border Gradient */}
+            <div className="absolute inset-0 bg-linear-to-r from-amber-600/10 via-violet-600/10 to-amber-600/10 animate-gradient-x"></div>
             
-            <motion.button
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => {
-                resetForm();
-                setIsOpen(true);
-              }}
-              className="group flex items-center gap-3 px-6 py-3.5 bg-linear-to-r from-amber-600 to-amber-700 text-white rounded-xl hover:from-amber-700 hover:to-amber-800 transition-all shadow-xl hover:shadow-amber-500/30"
-            >
-              <div className="relative">
-                <FiPlus className="w-5 h-5 transition-transform group-hover:rotate-90" />
-                <div className="absolute inset-0 bg-white/20 rounded-full blur-sm"></div>
+            {/* Inner Content */}
+            <div className="relative p-8 lg:p-12">
+              <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+                {/* Left - Title & Description */}
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-linear-to-br from-amber-500/20 to-amber-600/20 rounded-xl border border-amber-500/20">
+                      <FiGrid className="w-5 h-5 text-amber-400" />
+                    </div>
+                    <div className="px-3 py-1 bg-amber-500/10 rounded-full border border-amber-500/20">
+                      <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider">
+                        Admin Dashboard
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <motion.h2 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="text-4xl lg:text-5xl font-bold text-white mb-4 tracking-tight"
+                  >
+                    <span className="bg-linear-to-r from-amber-300 via-amber-200 to-amber-300 bg-clip-text text-transparent">
+                      Your Collections
+                    </span>
+                  </motion.h2>
+                  
+                  <motion.p 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="text-lg text-gray-400 max-w-2xl leading-relaxed"
+                  >
+                    Manage and showcase your exquisite jewellery collections with our premium dashboard. 
+                    Create, organize, and display your masterpieces effortlessly.
+                  </motion.p>
+                </div>
+                
+                {/* Right - Create Button */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="lg:self-start"
+                >
+                  <motion.button
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      resetForm();
+                      setIsOpen(true);
+                    }}
+                    className="group relative px-8 py-4 bg-linear-to-r from-amber-600 via-amber-500 to-amber-600 text-white rounded-2xl hover:shadow-2xl hover:shadow-amber-500/30 transition-all duration-300 overflow-hidden"
+                  >
+                    {/* Animated Background */}
+                    <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                    
+                    {/* Button Content */}
+                    <div className="relative flex items-center gap-3">
+                      <div className="p-2 bg-white/10 rounded-lg group-hover:rotate-90 transition-transform duration-300">
+                        <FiPlus className="w-5 h-5" />
+                      </div>
+                      <div className="text-left">
+                        <div className="font-bold text-lg ">New Collection</div>
+                        <div className="text-sm text-amber-200/70 font-light">
+                          Add masterpiece
+                        </div>
+                      </div>
+                    </div>
+                  </motion.button>
+                </motion.div>
               </div>
-              <span className="font-semibold">New Collection</span>
-            </motion.button>
+            </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Collections Grid */}
         {fetching ? (
@@ -326,8 +415,8 @@ export default function DashboardPage() {
                 <FiPackage className="w-8 h-8 text-amber-600 animate-pulse" />
               </div>
             </div>
-            <p className="mt-6 text-lg font-medium text-gray-300">Loading collections...</p>
-            <p className="text-gray-500">Preparing your beautiful catalogue</p>
+            <p className="mt-6 font-medium text-gray-300 allura-regular text-5xl">Loading collections...</p>
+            <p className="text-gray-500 allura-regular text-5xl">Preparing your beautiful catalogue</p>
           </div>
         ) : items.length === 0 ? (
           <motion.div 
@@ -360,7 +449,7 @@ export default function DashboardPage() {
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
           >
             {items.map((item) => (
               <motion.div
@@ -377,7 +466,7 @@ export default function DashboardPage() {
                     <img
                       src={item.imageUrl}
                       alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      className=" p-2 object-cover group-hover:scale-110 transition-transform duration-500"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src =
                           'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23d97706;stop-opacity:0.1" /><stop offset="100%" style="stop-color:%23b45309;stop-opacity:0.1" /></linearGradient></defs><rect width="400" height="300" fill="url(%23grad)"/></svg>';
@@ -386,7 +475,7 @@ export default function DashboardPage() {
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <div className="text-center">
-                        <FiPackage className="w-16 h-16 text-gray-600 mx-auto mb-3" />
+                        <FiPackage className="w-16 h-16 text-gray-600 mx-auto " />
                         <p className="text-gray-500 text-sm">No image</p>
                       </div>
                     </div>
@@ -713,6 +802,21 @@ export default function DashboardPage() {
           </div>
         )}
       </AnimatePresence>
+
+      <style jsx global>{`
+        @keyframes gradient-x {
+          0%, 100% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+        }
+        .animate-gradient-x {
+          animation: gradient-x 3s ease infinite;
+          background-size: 200% 200%;
+        }
+      `}</style>
     </div>
   );
 }

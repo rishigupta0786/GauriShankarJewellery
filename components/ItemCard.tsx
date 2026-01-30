@@ -15,7 +15,6 @@ interface ItemCardProps {
     _id: string;
     name: string;
     description: string;
-    price: number;
     imageUrl: string;
     articleCode: string;
     designName: string;
@@ -37,7 +36,7 @@ export default function ItemCard({ item, onClick }: ItemCardProps) {
       className="group bg-linear-to-br from-gray-800/50 to-gray-900/50 rounded-xl overflow-hidden border border-gray-700/50 hover:border-amber-500/30 hover:shadow-xl hover:shadow-amber-500/10 transition-all duration-300 cursor-pointer backdrop-blur-sm h-full flex flex-col"
     >
       {/* Image Section */}
-      <div className="relative h-44 overflow-hidden bg-linear-to-br from-gray-800 to-gray-900">
+      <div className="relative h-56 overflow-hidden  bg-linear-to-br from-gray-800 to-gray-900">
         {item.imageUrl ? (
           <img
             src={item.imageUrl}
@@ -56,16 +55,6 @@ export default function ItemCard({ item, onClick }: ItemCardProps) {
             </div>
           </div>
         )}
-
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-        {/* Price Badge */}
-        <div className="absolute top-3 left-3">
-          <div className="px-2 py-1 bg-linear-to-r from-amber-600 to-amber-700 text-white font-bold rounded-md shadow-lg shadow-amber-500/30 text-sm">
-            ₹{item.price.toFixed(2)}
-          </div>
-        </div>
 
         {/* View Details Button */}
         <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
