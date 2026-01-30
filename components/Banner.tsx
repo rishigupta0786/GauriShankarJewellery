@@ -82,7 +82,7 @@ export default function Banner() {
             width={250}
           />
         </div>
-        <div className="flex-none mx-4 lg:mx-8 relative z-10">
+        <div className="flex-none mt-5 mx-4 lg:mx-8 relative z-10">
           <JewelleryHero />
         </div>
         <div className=" hidden md:flex justify-end relative z-10">

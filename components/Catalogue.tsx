@@ -245,8 +245,6 @@ export default function Catalogue() {
             }}
             className="relative"
           >
-            {/* `/dashboard/catalogue/${itemId}?title=${encodeURIComponent(itemTitle)}`, */}
-
             <Link
               href={`/catalogue/${cat._id}?title=${encodeURIComponent(cat.title)}`}
               className="block"

@@ -449,7 +449,7 @@ export default function ProductCollectionPage({
                 transition={{ duration: 0.5 }}
                 className="text-center py-24 px-4"
               >
-                <div className="inline-block rounded-2xl bg-linear-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-sm border border-gray-700/50">
+                <div className="inline-block p-5 rounded-2xl bg-linear-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-sm border border-gray-700/50">
                   <p className="text-gray-400 text-xl mb-2">
                     {/* {emptyStateMessage} */}
                     No product found matching your criteria
