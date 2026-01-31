@@ -1,41 +1,156 @@
 "use client";
 
-import { collection } from "@/data/collection";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Particles from "./Particles";
 
+interface CatalogueItem {
+  _id: string;
+  title: string;
+  subtitle: string;
+  imageUrl: string;
+  createdAt: string;
+}
+
 export default function Catalogue() {
   const [isVisible, setIsVisible] = useState(false);
+  const [catalogue, setCatalogue] = useState<CatalogueItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    fetchCatalogue();
     setIsVisible(true);
   }, []);
 
-  const itemVariants = {
-    hidden: {
-      opacity: 0,
-      y: 50,
-      scale: 0.9,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 15,
-      },
-    },
+  const fetchCatalogue = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/catalogue");
+
+      if (!res.ok) {
+        throw new Error(`Failed to fetch catalogue: ${res.status}`);
+      }
+
+      const data = await res.json();
+      setCatalogue(data.items || []);
+      setError(null);
+    } catch (err) {
+      console.error("Error fetching catalogue:", err);
+      setError("Failed to load catalogue. Please try again later.");
+      setCatalogue([]);
+    } finally {
+      setLoading(false);
+    }
   };
+  // Loading state
+  if (loading) {
+    return (
+      <section className="relative z-20 bg-linear-to-b from-gray-950 via-gray-900 to-gray-950 overflow-hidden min-h-screen">
+        <div className="absolute inset-0 z-0">
+          <Particles
+            className="w-full h-full"
+            particleColors={["#ffca32", "#ffca32"]}
+            particleCount={350}
+            particleSpread={8}
+            speed={0.15}
+            particleBaseSize={100}
+            moveParticlesOnHover={false}
+            alphaParticles={true}
+            disableRotation={false}
+          />
+        </div>
+
+        <div className="pt-10"></div>
+
+        <div className="text-center py-40">
+          <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-2 border-amber-400"></div>
+          <p className="mt-4 text-amber-200 allura-regular text-6xl allura-regular">
+            Loading collections...
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <section className="relative z-20 bg-linear-to-b from-gray-950 via-gray-900 to-gray-950 overflow-hidden min-h-screen">
+        <div className="absolute inset-0 z-0">
+          <Particles
+            className="w-full h-full"
+            particleColors={["#ffca32", "#ffca32"]}
+            particleCount={350}
+            particleSpread={8}
+            speed={0.15}
+            particleBaseSize={100}
+            moveParticlesOnHover={false}
+            alphaParticles={true}
+            disableRotation={false}
+          />
+        </div>
+
+        <div className="pt-10"></div>
+
+        <div className="text-center py-40">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-red-500/20 rounded-full mb-4">
+            <span className="text-3xl">⚠️</span>
+          </div>
+          <p className="text-red-300 text-xl mb-4">Error Loading Catalogue</p>
+          <p className="text-gray-400 mb-6">{error}</p>
+          <button
+            onClick={fetchCatalogue}
+            className="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition"
+          >
+            Try Again
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+  // Empty state
+  if (catalogue.length === 0) {
+    return (
+      <section className="relative z-20 bg-linear-to-b from-gray-950 via-gray-900 to-gray-950 overflow-hidden min-h-screen">
+        <div className="absolute inset-0 z-0">
+          <Particles
+            className="w-full h-full"
+            particleColors={["#ffca32", "#ffca32"]}
+            particleCount={350}
+            particleSpread={8}
+            speed={0.15}
+            particleBaseSize={100}
+            moveParticlesOnHover={false}
+            alphaParticles={true}
+            disableRotation={false}
+          />
+        </div>
+
+        <div className="pt-10"></div>
+
+        <div className="text-center py-40">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-800 rounded-full mb-4">
+            <span className="text-3xl text-gray-400">📦</span>
+          </div>
+          <p className="text-amber-200 allura-regular text-3xl mb-2">
+            No Collections Yet
+          </p>
+          <p className="text-gray-400 mb-6">
+            Check back soon for our latest collections
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="relative z-20 bg-linear-to-b from-gray-950 via-gray-900 to-gray-950 overflow-hidden">
       {/* CRITICAL: Add top margin/padding to push content below sticky banner */}
-     {/* Particles Background */}
+      {/* Particles Background */}
       <div className="absolute inset-0 z-0">
         <Particles
           className="w-full h-full"
@@ -108,9 +223,9 @@ export default function Catalogue() {
 
       {/* Category Grid with Staggered Animation */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 p-10">
-        {collection.map((cat, index) => (
+        {catalogue.map((cat, index) => (
           <motion.div
-            key={cat.name}
+            key={cat._id}
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : {}}
             transition={{
@@ -130,7 +245,10 @@ export default function Catalogue() {
             }}
             className="relative"
           >
-            <Link href={cat.slug} className="block">
+            <Link
+              href={`/catalogue/${cat._id}?title=${encodeURIComponent(cat.title)}`}
+              className="block"
+            >
               {/* Card Container */}
               <div className="relative h-72 md:h-80 rounded-3xl overflow-hidden group">
                 {/* Background Layers */}
@@ -168,13 +286,24 @@ export default function Catalogue() {
                   }}
                 >
                   <div className="relative w-48 h-48 md:w-56 md:h-56">
-                    <Image
-                      src={cat.image}
-                      alt={cat.name}
-                      fill
-                      className="object-contain"
-                      priority
-                    />
+                    {cat.imageUrl ? (
+                      <Image
+                        src={cat.imageUrl}
+                        alt={cat.title}
+                        fill
+                        className="object-contain"
+                        priority
+                        onError={(e) => {
+                          // Fallback if image fails to load
+                          (e.target as HTMLImageElement).src =
+                            "/fallback-image.jpg";
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-800 rounded-lg">
+                        <span className="text-4xl">📦</span>
+                      </div>
+                    )}
 
                     {/* Floating Particles */}
                     <motion.div
@@ -224,9 +353,8 @@ export default function Catalogue() {
                         },
                       }}
                     >
-                      {cat.name}
+                      {cat.title}
                     </motion.h3>
-
                     {/* View More Indicator */}
                     <motion.div
                       className="absolute -bottom-3 left-1/2 transform -translate-x-1/2"
