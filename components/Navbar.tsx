@@ -1,15 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, Home, UserRound, Phone, ChevronRight } from "lucide-react";
+import { Menu, X, Home, UserRound, Phone, ChevronRight, Sparkles, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { collection } from "@/data/collection"; // Import from separate file
 
 export default function LuxuryNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState("Home");
+  const [isCollectionOpen, setIsCollectionOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,14 +23,27 @@ export default function LuxuryNavbar() {
       }
     };
 
+    // Close dropdown when clicking outside
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsCollectionOpen(false);
+      }
+    };
+
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    document.addEventListener("mousedown", handleClickOutside);
+    
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
   const navLinks = [
     { name: "Home", href: "/", icon: <Home size={24} /> },
+    { name: "Collections", href: "#", icon: <Sparkles size={24} />, hasDropdown: true },
     { name: "About", href: "/about", icon: <UserRound size={24} /> },
     { name: "Contact", href: "/contact", icon: <Phone size={24} /> },
   ];
@@ -92,33 +108,134 @@ export default function LuxuryNavbar() {
                       transition={{ delay: index * 0.1 }}
                       className="relative"
                     >
-                      <Link
-                        href={link.href}
-                        onClick={() => setActiveLink(link.name)}
-                        className="relative flex items-center gap-2  px-5 py-2 rounded-full group"
-                      >
-                        {activeLink === link.name && (
-                          <motion.div
-                            layoutId="activeTab"
-                            className="absolute inset-0 bg-linear-to-r from-amber-500/15 to-yellow-500/10 rounded-full"
-                            transition={{
-                              type: "spring",
-                              stiffness: 300,
-                              damping: 30,
-                            }}
-                          />
-                        )}
+                      {link.hasDropdown ? (
+                        <div ref={dropdownRef} className="relative">
+                          <button
+                            onClick={() => setIsCollectionOpen(!isCollectionOpen)}
+                            className="relative flex items-center gap-2 px-5 py-2 rounded-full group"
+                          >
+                            {activeLink === link.name && (
+                              <motion.div
+                                layoutId="activeTab"
+                                className="absolute inset-0 bg-linear-to-r from-amber-500/15 to-yellow-500/10 rounded-full"
+                                transition={{
+                                  type: "spring",
+                                  stiffness: 300,
+                                  damping: 30,
+                                }}
+                              />
+                            )}
 
-                        <span className="relative text-amber-300/80 group-hover:text-amber-200  transition-all duration-300">
-                          {link.icon}
-                        </span>
+                            <span className="relative text-amber-300/80 group-hover:text-amber-200 transition-all duration-300">
+                              {link.icon}
+                            </span>
 
-                        <span className="relative text-xl font-normal text-amber-100/80 group-hover:text-white transition-colors duration-300 tracking-normal">
-                          {link.name}
-                        </span>
+                            <span className="relative text-xl font-normal text-amber-100/80 group-hover:text-white transition-colors duration-300 tracking-normal">
+                              {link.name}
+                            </span>
 
-                        <span className="absolute bottom-0 left-3 right-3 h-px bg-linear-to-r from-transparent via-amber-400/40 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
-                      </Link>
+                            <motion.span
+                              animate={{ rotate: isCollectionOpen ? 180 : 0 }}
+                              transition={{ duration: 0.3 }}
+                              className="relative ml-1"
+                            >
+                              <ChevronDown size={18} className="text-amber-300/60" />
+                            </motion.span>
+
+                            <span className="absolute bottom-0 left-3 right-3 h-px bg-linear-to-r from-transparent via-amber-400/40 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
+                          </button>
+
+                          {/* Simple Dropdown Menu for Laptop */}
+                          <AnimatePresence>
+                            {isCollectionOpen && (
+                              <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 10 }}
+                                transition={{ duration: 0.2 }}
+                                className="absolute top-full left-1/2 -translate-x-1/2 mt-2 min-w-56 z-50"
+                              >
+                                <div className="relative">
+                                  {/* Arrow */}
+                                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 rotate-45 bg-slate-900 border-l border-t border-amber-500/20"></div>
+                                  
+                                  {/* Simple Dropdown Content */}
+                                  <div className="bg-slate-900/95 backdrop-blur-xl border border-amber-500/20 rounded-xl shadow-2xl shadow-amber-950/50 overflow-hidden">
+                                    <div className="py-2">
+                                      {collection.map((item, index) => (
+                                        <motion.div
+                                          key={item.name}
+                                          initial={{ opacity: 0, x: -10 }}
+                                          animate={{ opacity: 1, x: 0 }}
+                                          transition={{ delay: index * 0.05 }}
+                                          whileHover={{ scale: 1.02 }}
+                                          whileTap={{ scale: 0.98 }}
+                                        >
+                                          <Link
+                                            href={item.slug}
+                                            onClick={() => {
+                                              setIsCollectionOpen(false);
+                                              setActiveLink("Collections");
+                                            }}
+                                            className="group block"
+                                          >
+                                            <div className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800/60 border-l-2 border-transparent hover:border-amber-500/40 transition-all duration-300">
+                                              {/* Icon */}
+                                              <div className="w-8 h-8 rounded-full bg-linear-to-br from-amber-500/10 to-yellow-500/5 flex items-center justify-center group-hover:from-amber-500/20 group-hover:to-yellow-500/10 transition-all duration-300">
+                                                <Sparkles className="w-4 h-4 text-amber-300/60 group-hover:text-amber-300" />
+                                              </div>
+                                              
+                                              {/* Text */}
+                                              <div>
+                                                <span className="text-sm font-medium text-amber-100/90 group-hover:text-amber-50 transition-colors">
+                                                  {item.name}
+                                                </span>
+                                              </div>
+                                              
+                                              {/* Arrow indicator */}
+                                              <div className="ml-auto">
+                                                <ChevronRight className="w-4 h-4 text-amber-500/40 group-hover:text-amber-500/60 transition-colors" />
+                                              </div>
+                                            </div>
+                                          </Link>
+                                        </motion.div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      ) : (
+                        <Link
+                          href={link.href}
+                          onClick={() => setActiveLink(link.name)}
+                          className="relative flex items-center gap-2 px-5 py-2 rounded-full group"
+                        >
+                          {activeLink === link.name && (
+                            <motion.div
+                              layoutId="activeTab"
+                              className="absolute inset-0 bg-linear-to-r from-amber-500/15 to-yellow-500/10 rounded-full"
+                              transition={{
+                                type: "spring",
+                                stiffness: 300,
+                                damping: 30,
+                              }}
+                            />
+                          )}
+
+                          <span className="relative text-amber-300/80 group-hover:text-amber-200 transition-all duration-300">
+                            {link.icon}
+                          </span>
+
+                          <span className="relative text-xl font-normal text-amber-100/80 group-hover:text-white transition-colors duration-300 tracking-normal">
+                            {link.name}
+                          </span>
+
+                          <span className="absolute bottom-0 left-3 right-3 h-px bg-linear-to-r from-transparent via-amber-400/40 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
+                        </Link>
+                      )}
                     </motion.div>
                   ))}
                 </div>
@@ -135,7 +252,7 @@ export default function LuxuryNavbar() {
           >
             <div className="absolute inset-0 bg-linear-to-r from-amber-500/10 to-yellow-300/10 rounded-full border border-amber-500/20 group-hover:border-amber-400/30 transition-all duration-300"></div>
 
-            <div className="relative  flex flex-col items-center justify-center space-y-1">
+            <div className="relative flex flex-col items-center justify-center space-y-1">
               <motion.div
                 animate={isOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
                 className="w-4 h-0.5 bg-linear-to-r from-amber-300 to-yellow-200 rounded-full"
@@ -207,7 +324,7 @@ export default function LuxuryNavbar() {
                   </div>
 
                   {/* Menu Items */}
-                  <div className=" flex-1 p-4 overflow-y-auto">
+                  <div className="flex-1 p-4 overflow-y-auto">
                     <div className="space-y-2">
                       {navLinks.map((link, index) => (
                         <motion.div
@@ -217,81 +334,191 @@ export default function LuxuryNavbar() {
                           transition={{ delay: 0.2 + index * 0.1 }}
                           whileTap={{ scale: 0.98 }}
                         >
-                          <Link
-                            href={link.href}
-                            onClick={() => {
-                              setActiveLink(link.name);
-                              setIsOpen(false);
-                            }}
-                            className="relative group"
-                          >
-                            <div
-                              className={`flex items-center justify-between py-2 px-1 rounded-xl transition-all duration-300 ${
-                                activeLink === link.name
-                                  ? "bg-linear-to-r from-amber-500/15 to-amber-500/5 border border-amber-500/20"
-                                  : "hover:bg-slate-800/40 border border-transparent hover:border-amber-500/10"
-                              }`}
-                            >
-                              {/* Left side with icon and text */}
-                              <div className="flex items-center ml-2 space-x-4">
-                                {/* Icon Container */}
-                                <div
-                                  className={`relative w-14 h-14  rounded-full flex items-center justify-center  transition-all duration-300 ${
-                                    activeLink === link.name
-                                      ? "bg-linear-to-br from-amber-500/20 to-yellow-500/10"
-                                      : "bg-slate-800/50 group-hover:bg-slate-700/50"
-                                  }`}
-                                >
+                          {link.hasDropdown ? (
+                            <div className="relative">
+                              <div
+                                className={`flex items-center justify-between py-2 px-1 rounded-xl transition-all duration-300 cursor-pointer ${
+                                  activeLink === link.name
+                                    ? "bg-linear-to-r from-amber-500/15 to-amber-500/5 border border-amber-500/20"
+                                    : "hover:bg-slate-800/40 border border-transparent hover:border-amber-500/10"
+                                }`}
+                                onClick={() => setIsCollectionOpen(!isCollectionOpen)}
+                              >
+                                {/* Left side with icon and text */}
+                                <div className="flex items-center ml-2 space-x-4">
+                                  {/* Icon Container */}
                                   <div
-                                    className={`relative transition-all duration-300 ${
+                                    className={`relative w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 ${
                                       activeLink === link.name
-                                        ? "text-amber-300"
-                                        : "text-amber-300/60 group-hover:text-amber-300"
+                                        ? "bg-linear-to-br from-amber-500/20 to-yellow-500/10"
+                                        : "bg-slate-800/50 group-hover:bg-slate-700/50"
                                     }`}
                                   >
-                                    {link.icon}
+                                    <div
+                                      className={`relative transition-all duration-300 ${
+                                        activeLink === link.name
+                                          ? "text-amber-300"
+                                          : "text-amber-300/60 group-hover:text-amber-300"
+                                      }`}
+                                    >
+                                      {link.icon}
+                                    </div>
+
+                                    {/* Glow effect for active link */}
+                                    {activeLink === link.name && (
+                                      <motion.div
+                                        initial={{ scale: 0.8, opacity: 0 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        className="absolute inset-0 rounded-full bg-amber-400/10 blur-sm"
+                                      />
+                                    )}
                                   </div>
 
-                                  {/* Glow effect for active link */}
-                                  {activeLink === link.name && (
-                                    <motion.div
-                                      initial={{ scale: 0.8, opacity: 0 }}
-                                      animate={{ scale: 1, opacity: 1 }}
-                                      className="absolute inset-0 rounded-full bg-amber-400/10 blur-sm"
-                                    />
-                                  )}
+                                  {/* Link Text */}
+                                  <div>
+                                    <span
+                                      className={`block allura-regular text-2xl font-light tracking-wide transition-all duration-300 -mb-2 ${
+                                        activeLink === link.name
+                                          ? "text-amber-100"
+                                          : "text-amber-100/80 group-hover:text-amber-100"
+                                      }`}
+                                    >
+                                      {link.name}
+                                    </span>
+                                  </div>
                                 </div>
 
-                                {/* Link Text */}
-                                <div>
-                                  <span
-                                    className={`block allura-regular text-2xl font-light tracking-wide transition-all duration-300 -mb-2 ${
-                                      activeLink === link.name
-                                        ? "text-amber-100"
-                                        : "text-amber-100/80 group-hover:text-amber-100"
-                                    }`}
-                                  >
-                                    {link.name}
-                                  </span>
-                                </div>
+                                {/* Chevron for dropdown */}
+                                <motion.div
+                                  animate={{ rotate: isCollectionOpen ? 180 : 0 }}
+                                  transition={{ duration: 0.3 }}
+                                  className={`transition-all duration-300 ${
+                                    activeLink === link.name
+                                      ? "text-amber-300"
+                                      : "text-amber-300/30 group-hover:text-amber-300/60"
+                                  }`}
+                                >
+                                  <ChevronDown className="w-5 h-5" />
+                                </motion.div>
                               </div>
 
-                              {/* Arrow Indicator */}
-                              <motion.div
-                                animate={{ x: 0 }}
-                                className={`transition-all duration-300 ${
+                              {/* Collection Submenu for Mobile */}
+                              <AnimatePresence>
+                                {isCollectionOpen && (
+                                  <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: "auto", opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="ml-14 mt-2 overflow-hidden"
+                                  >
+                                    <div className="space-y-1 pl-4 border-l border-amber-500/20">
+                                      {collection.map((item, subIndex) => (
+                                        <motion.div
+                                          key={item.name}
+                                          initial={{ opacity: 0, x: -10 }}
+                                          animate={{ opacity: 1, x: 0 }}
+                                          transition={{ delay: subIndex * 0.05 }}
+                                          whileTap={{ scale: 0.98 }}
+                                        >
+                                          <Link
+                                            href={item.slug}
+                                            onClick={() => {
+                                              setActiveLink("Collections");
+                                              setIsOpen(false);
+                                              setIsCollectionOpen(false);
+                                            }}
+                                            className="flex items-center py-2 px-3 rounded-lg hover:bg-slate-800/40 transition-all duration-300 group"
+                                          >
+                                            <div className="w-2 h-2 rounded-full bg-amber-400/40 mr-3 group-hover:bg-amber-400 transition-all duration-300"></div>
+                                            <span className="text-lg text-amber-100/80 group-hover:text-amber-100 transition-colors">
+                                              {item.name}
+                                            </span>
+                                          </Link>
+                                        </motion.div>
+                                      ))}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
+                          ) : (
+                            <Link
+                              href={link.href}
+                              onClick={() => {
+                                setActiveLink(link.name);
+                                setIsOpen(false);
+                              }}
+                              className="relative group"
+                            >
+                              <div
+                                className={`flex items-center justify-between py-2 px-1 rounded-xl transition-all duration-300 ${
                                   activeLink === link.name
-                                    ? "text-amber-300"
-                                    : "text-amber-300/30 group-hover:text-amber-300/60"
+                                    ? "bg-linear-to-r from-amber-500/15 to-amber-500/5 border border-amber-500/20"
+                                    : "hover:bg-slate-800/40 border border-transparent hover:border-amber-500/10"
                                 }`}
                               >
-                                <ChevronRight className="w-5 h-5" />
-                              </motion.div>
+                                {/* Left side with icon and text */}
+                                <div className="flex items-center ml-2 space-x-4">
+                                  {/* Icon Container */}
+                                  <div
+                                    className={`relative w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 ${
+                                      activeLink === link.name
+                                        ? "bg-linear-to-br from-amber-500/20 to-yellow-500/10"
+                                        : "bg-slate-800/50 group-hover:bg-slate-700/50"
+                                    }`}
+                                  >
+                                    <div
+                                      className={`relative transition-all duration-300 ${
+                                        activeLink === link.name
+                                          ? "text-amber-300"
+                                          : "text-amber-300/60 group-hover:text-amber-300"
+                                      }`}
+                                    >
+                                      {link.icon}
+                                    </div>
 
-                              {/* Hover Glow Line */}
-                              <div className="absolute bottom-0 left-4 right-4 h-px bg-linear-to-r from-transparent via-amber-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
-                            </div>
-                          </Link>
+                                    {/* Glow effect for active link */}
+                                    {activeLink === link.name && (
+                                      <motion.div
+                                        initial={{ scale: 0.8, opacity: 0 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        className="absolute inset-0 rounded-full bg-amber-400/10 blur-sm"
+                                      />
+                                    )}
+                                  </div>
+
+                                  {/* Link Text */}
+                                  <div>
+                                    <span
+                                      className={`block allura-regular text-2xl font-light tracking-wide transition-all duration-300 -mb-2 ${
+                                        activeLink === link.name
+                                          ? "text-amber-100"
+                                          : "text-amber-100/80 group-hover:text-amber-100"
+                                      }`}
+                                    >
+                                      {link.name}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {/* Arrow Indicator */}
+                                <motion.div
+                                  animate={{ x: 0 }}
+                                  className={`transition-all duration-300 ${
+                                    activeLink === link.name
+                                      ? "text-amber-300"
+                                      : "text-amber-300/30 group-hover:text-amber-300/60"
+                                  }`}
+                                >
+                                  <ChevronRight className="w-5 h-5" />
+                                </motion.div>
+
+                                {/* Hover Glow Line */}
+                                <div className="absolute bottom-0 left-4 right-4 h-px bg-linear-to-r from-transparent via-amber-400/20 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
+                              </div>
+                            </Link>
+                          )}
                         </motion.div>
                       ))}
                     </div>

@@ -13,7 +13,7 @@ export default function Contact() {
       name: "WhatsApp",
       color: "#25D366",
       image: "/whatsapp.png",
-      href: "https://wa.me/your-number",
+      href: "https://wa.me/919795551369",
     },
     {
       name: "Facebook",
@@ -25,25 +25,25 @@ export default function Contact() {
       name: "Instagram",
       color: "#E4405F",
       image: "/instagram.png",
-      href: "https://instagram.com/your-profile",
+      href: "https://www.instagram.com/gaurishankar_jewellers1569?utm_source=qr&igsh=MWgxbjVnZDd1OGxx",
     },
     {
       name: "Phone",
       color: "#d600f0de",
       image: "/phone.png",
-      href: "tel:+1234567890",
+      href: "tel:+919795551369",
     },
     {
       name: "VisitingCard",
       color: "#e73535",
-      image: "/visiting.png",
+      image: "/visiting_card.png",
       href: "#",
     },
     {
       name: "SMS",
       color: "#00b0f0",
       image: "/message.png",
-      href: "sms:+1234567890",
+      href: "sms:+919795551369",
     },
   ];
 

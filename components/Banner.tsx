@@ -95,7 +95,7 @@ export default function Banner() {
       </div>
 
       {/* Prices Container - Pushed to the bottom */}
-      <div className="w-full flex flex-col sm:flex-row items-center justify-center gap-4 px-4  -mb-20 relative z-10">
+      <div className="w-full flex flex-col sm:flex-row items-center justify-center gap-4 px-4  -mb-15 relative z-10">
         <div className="flex items-center justify-center px-6 py-3 border border-gray-700 rounded-xl bg-gray-800/70 backdrop-blur-md shadow-lg hover:shadow-[0_0_15px_5px_rgba(255,191,0,0.8)] transition-all duration-300">
           <span className="font-sans text-sm text-amber-400 font-medium">
             GOLD :- {prices ? `₹${prices.gold.toFixed(0)}/g` : "Loading..."}

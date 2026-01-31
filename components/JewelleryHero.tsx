@@ -12,7 +12,7 @@ const JewelleryHero = () => {
         <img
           src={ringUrl}
           alt="Rotating Gold Ring"
-          className="lg:w-full w-72 metallic-shadow"
+          className="w-60 md:w-72 lg:w-full metallic-shadow"
         />
       </div>
       {/* Logo */}
@@ -20,7 +20,7 @@ const JewelleryHero = () => {
         <img
           src={logoUrl}
           alt="Gauri Shankar Jewellers"
-          className="lg:w-full w-72"
+          className="w-60 md:w-72 lg:w-full"
         />
       </div>
 
