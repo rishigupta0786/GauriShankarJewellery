@@ -331,12 +331,8 @@ export default function CatalogueItemsPage() {
     return (
       <div className="min-h-screen bg-linear-to-br from-slate-900 via-slate-950 to-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="relative">
-            <div className="w-16 h-16 border-4 border-transparent border-t-emerald-400 border-r-violet-400 rounded-full animate-spin"></div>
-            <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-b-violet-400 border-l-emerald-400 rounded-full animate-spin animate-reverse"></div>
-          </div>
           <p className="mt-6 allura-regular text-slate-300 font-light text-5xl tracking-wider">
-            Loading Collection...
+            Loading Collection
           </p>
         </div>
       </div>

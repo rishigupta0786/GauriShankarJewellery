@@ -89,6 +89,11 @@ export default function ItemViewModal({
     }
   };
 
+  // Prevent modal content clicks from closing the modal
+  const handleModalContentClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
     <AnimatePresence>
       <motion.div
@@ -97,11 +102,11 @@ export default function ItemViewModal({
         animate="visible"
         exit="exit"
         className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4"
+        onClick={onClose}
       >
         {/* Glass Morphic Backdrop */}
         <motion.div
           className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-          onClick={onClose}
         />
 
         {/* Modal Container */}
@@ -110,7 +115,8 @@ export default function ItemViewModal({
           initial="hidden"
           animate="visible"
           exit="exit"
-          className="relative z-10 w-full max-w-5xl max-h-[90vh] bg-linear-to-br from-gray-900 to-gray-800 rounded-xl overflow-hidden border border-gray-700 shadow-2xl"
+          className="relative z-10 w-full max-w-5xl max-h-[90vh] bg-linear-to-br from-gray-900 to-gray-800 rounded-xl overflow-hidden border border-gray-700 shadow-2xl overflow-y-auto"
+          onClick={handleModalContentClick}
         >
           {/* Close Button */}
           <motion.button
@@ -132,7 +138,7 @@ export default function ItemViewModal({
                       <img
                         src={images[currentImageIndex]}
                         alt={`${item.name} - view ${currentImageIndex + 1}`}
-                        className="w-full h-full  object-contain"
+                        className="w-full h-full object-contain"
                       />
                       
                       {/* Navigation */}
@@ -248,14 +254,14 @@ export default function ItemViewModal({
                   })}
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-3 pt-2">
+                {/* Action Buttons - Fixed for mobile */}
+                <div className="flex gap-2 pt-2">
                   <button
                     onClick={onEdit}
-                    className="flex-1 px-4 py-3 bg-linear-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all font-medium text-sm"
+                    className="flex-1 min-w-0 px-3 py-2.5 bg-linear-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all font-medium text-sm flex items-center justify-center gap-1.5 whitespace-nowrap"
                   >
-                    <FiEdit2 className="inline mr-2" />
-                    Edit
+                    <FiEdit2 className="text-sm shrink-0" />
+                    <span className="truncate">Edit</span>
                   </button>
                   <button
                     onClick={() => {
@@ -263,10 +269,10 @@ export default function ItemViewModal({
                         onDelete(item._id);
                       }
                     }}
-                    className="flex-1 px-4 py-3 bg-linear-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition-all font-medium text-sm"
+                    className="flex-1 min-w-0 px-3 py-2.5 bg-linear-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition-all font-medium text-sm flex items-center justify-center gap-1.5 whitespace-nowrap"
                   >
-                    <FiTrash2 className="inline mr-2" />
-                    Delete
+                    <FiTrash2 className="text-sm shrink-0" />
+                    <span className="truncate">Delete</span>
                   </button>
                 </div>
               </div>

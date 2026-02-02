@@ -75,6 +75,19 @@ export default function LuxuryNavbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Prevent body scrolling when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   const toggleMenu = () => setIsOpen(!isOpen);
   const toggleCollections = () => setCollectionsOpen(!collectionsOpen);
 
@@ -98,10 +111,10 @@ export default function LuxuryNavbar() {
   return (
     <>
       {/* Fixed Navbar Container */}
-      <nav className="fixed top-0 left-0 right-0 z-50 pt-2 px-6 bg-gray-950/60 md:bg-transparent">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <nav className="fixed top-0 left-0 right-0 z-50 pt-2 px-3 bg-gray-950/60 md:bg-transparent">
+        <div className="max-w-8xl mx-auto flex items-center justify-between">
           {/* Logo - Separated on left */}
-          <motion.div whileHover={{ scale: 1.05 }} className="shrink-0">
+          <motion.div whileHover={{ scale: 1.05 }} className="shrink-0 ">
             <Link href="/">
               <Image
                 src="/navlogo.png"
@@ -382,7 +395,7 @@ export default function LuxuryNavbar() {
           </motion.button>
         </div>
 
-        {/* Redesigned Mobile Menu Dropdown */}
+        {/* Redesigned Mobile Menu Dropdown - FIXED WITH SCROLL */}
         <AnimatePresence>
           {isOpen && (
             <>
@@ -395,7 +408,7 @@ export default function LuxuryNavbar() {
                 className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40"
               />
 
-              {/* Mobile Menu Panel */}
+              {/* Mobile Menu Panel - FIXED: Added overflow-hidden to outer container */}
               <motion.div
                 initial={{ opacity: 0, x: "100%" }}
                 animate={{ opacity: 1, x: 0 }}
@@ -409,10 +422,10 @@ export default function LuxuryNavbar() {
                 {/* Subtle Pattern Overlay */}
                 <div className="absolute inset-0 opacity-5 bg-[radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] bg-size-[20px_20px]"></div>
 
-                {/* Menu Content */}
+                {/* Menu Content with proper scrolling */}
                 <div className="relative h-full flex flex-col">
-                  {/* Menu Header */}
-                  <div className="p-5 border-b border-amber-500/10">
+                  {/* Menu Header - Fixed height */}
+                  <div className="p-5 border-b border-amber-500/10 shrink-0">
                     <div className="flex items-center justify-between">
                       <motion.div
                         initial={{ opacity: 0, x: -20 }}
@@ -436,9 +449,9 @@ export default function LuxuryNavbar() {
                     </div>
                   </div>
 
-                  {/* Menu Items - No Scroll */}
-                  <div className="flex-1 p-4">
-                    <div className="space-y-2">
+                  {/* Menu Items Container - Scrollable area */}
+                  <div className="flex-1 overflow-y-auto">
+                    <div className="p-4 space-y-2">
                       {mainNavLinks.map((link, index) => (
                         <motion.div
                           key={link.name}
@@ -514,57 +527,64 @@ export default function LuxuryNavbar() {
                                 </div>
                               </button>
 
-                              {/* Mobile Collections Dropdown */}
+                              {/* Mobile Collections Dropdown - Scrollable if too many items */}
                               <AnimatePresence>
                                 {collectionsOpen && (
                                   <motion.div
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: "auto" }}
                                     exit={{ opacity: 0, height: 0 }}
-                                    className="ml-10 mt-1 space-y-1"
+                                    className="ml-5 mt-1 bg-amber-100/10 rounded-xl"
                                   >
-                                    {loading ? (
-                                      <div className="text-center py-2">
-                                        <span className="text-sm text-amber-300/70">
-                                          Loading...
-                                        </span>
-                                      </div>
-                                    ) : error ? (
-                                      <div className="text-center py-2">
-                                        <span className="text-sm text-amber-300/70">
-                                          {error}
-                                        </span>
-                                      </div>
-                                    ) : (
-                                      catalogue.map((cat) => (
-                                        <Link
-                                          key={cat._id}
-                                          href={`/catalogue/${cat._id}?title=${encodeURIComponent(cat.title)}`}
-                                          onClick={() => {
-                                            setActiveLink("Collections");
-                                            setIsOpen(false);
-                                          }}
-                                          className="flex items-center gap-3 py-2 rounded-lg hover:bg-slate-800/50 transition-colors"
-                                        >
-                                          <div className="w-6 h-6 rounded bg-slate-700 flex items-center justify-center">
-                                            <img
-                                              src={cat.imageUrl}
-                                              alt={cat.title}
-                                              className="w-full h-full object-cover"
-                                              onError={(e) => {
-                                                (
-                                                  e.target as HTMLImageElement
-                                                ).src =
-                                                  'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%231e293b"/><text x="50" y="50" font-family="Arial" font-size="40" fill="%23fbbf24" text-anchor="middle" dy=".3em">💎</text></svg>';
-                                              }}
-                                            />
-                                          </div>
-                                          <span className="text-lg text-amber-100/80 allura-regular ">
-                                            {cat.title}
+                                    <div className="space-y-1 max-h-48 overflow-y-auto pr-2">
+                                      {loading ? (
+                                        <div className="text-center py-2">
+                                          <span className="text-sm text-amber-300/70">
+                                            Loading...
                                           </span>
-                                        </Link>
-                                      ))
-                                    )}
+                                        </div>
+                                      ) : error ? (
+                                        <div className="text-center py-2">
+                                          <span className="text-sm text-amber-300/70">
+                                            {error}
+                                          </span>
+                                        </div>
+                                      ) : (
+                                        catalogue.map((cat) => (
+                                          <Link
+                                            key={cat._id}
+                                            href={`/catalogue/${cat._id}?title=${encodeURIComponent(cat.title)}`}
+                                            onClick={() => {
+                                              setActiveLink("Collections");
+                                              setIsOpen(false);
+                                            }}
+                                            className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-slate-800/50 transition-colors group"
+                                          >
+                                            <div className="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center overflow-hidden shrink-0">
+                                              {cat.imageUrl ? (
+                                                <img
+                                                  src={cat.imageUrl}
+                                                  alt={cat.title}
+                                                  className="w-full h-full object-cover"
+                                                  onError={(e) => {
+                                                    (
+                                                      e.target as HTMLImageElement
+                                                    ).src =
+                                                      'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%231e293b"/><text x="50" y="50" font-family="Arial" font-size="40" fill="%23fbbf24" text-anchor="middle" dy=".3em">💎</text></svg>';
+                                                  }}
+                                                />
+                                              ) : (
+                                                <Sparkles className="w-4 h-4 text-amber-300/60" />
+                                              )}
+                                            </div>
+                                            <span className="text-base text-amber-100/80 allura-regular truncate group-hover:text-white transition-colors">
+                                              {cat.title}
+                                            </span>
+                                            <ChevronRight className="w-3 h-3 text-amber-300/40 ml-auto shrink-0" />
+                                          </Link>
+                                        ))
+                                      )}
+                                    </div>
                                   </motion.div>
                                 )}
                               </AnimatePresence>
