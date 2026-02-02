@@ -55,24 +55,24 @@ export default function AboutPage() {
 
   const milestones = [
     {
-      year: "1985",
+      year: "1951",
       title: "Foundation",
-      description: "Established our first workshop in Jaipur",
+      description: "Established our first workshop in kotwa Naryanpur",
     },
     {
-      year: "2000",
-      title: "Expansion",
-      description: "Opened flagship store in Mumbai",
+      year: "1970",
+      title: "by Grand Father",
+      description: "Opened flagship store in Ghazipur",
     },
     {
-      year: "2015",
-      title: "Innovation",
-      description: "Introduced contemporary designs with traditional touch",
+      year: "2012",
+      title: "Vidya jewellers",
+      description: "New branch by elder brother",
     },
     {
-      year: "2023",
-      title: "Global Reach",
-      description: "Serving international clientele worldwide",
+      year: "2024",
+      title: "GauriShankar jewellers",
+      description: "Mahrajganj,Ghazipur",
     },
   ];
 
@@ -162,7 +162,7 @@ export default function AboutPage() {
                     <Crown className="w-8 h-8 text-amber-400" />
                     <div>
                       <p className="text-white font-light allura-regular text-xl">
-                        Since 1985
+                        Since 1951
                       </p>
                       <p className="text-amber-200 text-lg font-light allura-regular ">
                         Crafting Excellence
@@ -185,27 +185,26 @@ export default function AboutPage() {
               </h2>
 
               <div className="space-y-4 text-gray-300">
-                <p className="text-lg">
-                  Founded in 1985 by Master Goldsmith Rajesh Kumar, our journey
-                  began in a small workshop in Jaipur, the heart of India's
-                  jewellery heritage. What started as a passion for preserving
-                  traditional techniques has evolved into a legacy spanning
-                  three generations.
+               <p className="text-lg leading-relaxed text-justify">
+                 Our journey began in 1951 with Late Indradev Seth, our great-grandfather, in Kotwanarayanpur. 
+                 This legacy was carried forward by Late Nageshwar Prasad Seth, our grandfather, in Ghazipur. 
+                 For many years, we proudly served our customers as Vidya Jewellery, managed by Mr. Vinod Kumar Verma and his elder son. 
+                 As time progressed and my elder brother pursued his professional career, we decided to expand our family’s craftsmanship to a new location with a fresh identity. 
+                 In 2024, we proudly opened our doors as Gauri Shankar Jewellery. 
+                 Today, the business is led by Mr. Vinod Kumar Verma and his son, Vishal Soni. 
+                 Though our name and location have evolved, our commitment to purity, trust, and the art of fine jewellery remains unchanged for four generations.
                 </p>
-                <p className="text-lg">
-                  Today, we blend centuries-old craftsmanship with contemporary
-                  design, creating pieces that tell stories and become
-                  heirlooms. Each creation reflects our commitment to
-                  excellence, ethical sourcing, and the timeless beauty of
-                  Indian jewellery.
-                </p>
+                <p className="text-lg leading-relaxed text-justify">
+                  Today, we blend centuries-old craftsmanship with contemporary designs, creating jewellery that tells a story and becomes a treasured heirloom. 
+                  Every piece reflects our dedication to excellence, ethical sourcing, and the timeless beauty of Indian jewellery.
+                  </p>
               </div>
 
               {/* Stats */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6">
                 <div className="text-center p-4 bg-gray-900/50 rounded-xl border border-gray-800/50">
                   <p className="text-3xl font-bold text-amber-400 allura-regular">
-                    38+
+                    75+
                   </p>
                   <p className="text-gray-400 allura-regular">Years</p>
                 </div>
@@ -534,7 +533,7 @@ export default function AboutPage() {
             </blockquote>
           </div>
           <p className="text-gray-400 mt-6 text-base md:text-lg allura-regular">
-            — Rajesh Kumar, Founder
+            — Vinod kumrar Verma
           </p>
         </div>
       </motion.div>
