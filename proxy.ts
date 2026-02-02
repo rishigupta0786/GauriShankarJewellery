@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const isLoggedIn = request.cookies.get("isLoggedIn");
 
   // Protect dashboard
