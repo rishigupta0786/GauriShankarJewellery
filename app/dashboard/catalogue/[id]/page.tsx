@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
+import toast, { Toaster } from "react-hot-toast";
 import { FiArrowLeft, FiPlus, FiSearch, FiX } from "react-icons/fi";
 import { RiDashboardFill } from "react-icons/ri";
 import ItemCard from "@/components/ItemCard";
@@ -89,6 +90,7 @@ export default function CatalogueItemsPage() {
       setItems(data.items || []);
     } catch (error) {
       console.error("Failed to fetch items:", error);
+      toast.error("Failed to load items");
     } finally {
       setFetching(false);
     }
@@ -120,12 +122,18 @@ export default function CatalogueItemsPage() {
     if (file) {
       const url = URL.createObjectURL(file);
       setPreviewUrls((prev) => ({ ...prev, [type]: url }));
+      toast.success(
+        `${type === "main" ? "Main image" : type.replace("side", "Side ")} selected`,
+      );
     }
   };
 
   const handleRemoveFile = (type: "main" | "side1" | "side2" | "side3") => {
     setSelectedFiles((prev) => ({ ...prev, [type]: null }));
     setPreviewUrls((prev) => ({ ...prev, [type]: "" }));
+    toast(`Image removed`, {
+      icon: "🗑️",
+    });
   };
 
   const uploadImageToCloudinary = async (
@@ -141,10 +149,11 @@ export default function CatalogueItemsPage() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Upload failed");
+      toast.success("Image uploaded successfully");
       return data.url;
     } catch (error) {
       console.error("Upload error:", error);
-      alert("Failed to upload image. Please try again.");
+      toast.error("Failed to upload image. Please try again.");
       return "";
     }
   };
@@ -177,118 +186,200 @@ export default function CatalogueItemsPage() {
     setSelectedFiles({ main: null, side1: null, side2: null, side3: null });
     setShowAddEditModal(true);
     setShowViewModal(false);
+    toast("Editing item", {
+      icon: "✏️",
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isEditMode && !selectedFiles.main) {
-      alert("Please upload a main image for new items");
+      toast.error("Please upload a main image for new items");
       return;
     }
 
     setLoading(true);
     setUploading(true);
 
-    try {
-      const uploadPromises = [];
-      const uploadResults: Record<string, string> = {};
+    // Create a toast promise for the submission
+    const submissionPromise = new Promise(async (resolve, reject) => {
+      try {
+        const uploadPromises = [];
+        const uploadResults: Record<string, string> = {};
 
-      // Upload images in parallel
-      const imageTypes = ["main", "side1", "side2", "side3"] as const;
-      for (const type of imageTypes) {
-        if (selectedFiles[type]) {
-          uploadPromises.push(
-            uploadImageToCloudinary(selectedFiles[type]).then((url) => {
-              uploadResults[type] = url;
-            }),
-          );
+        // Upload images in parallel
+        const imageTypes = ["main", "side1", "side2", "side3"] as const;
+        for (const type of imageTypes) {
+          if (selectedFiles[type]) {
+            uploadPromises.push(
+              uploadImageToCloudinary(selectedFiles[type]).then((url) => {
+                uploadResults[type] = url;
+              }),
+            );
+          }
         }
+
+        await Promise.all(uploadPromises);
+
+        // Use existing URLs for edit mode if no new file uploaded
+        if (isEditMode && editingItemId) {
+          const existingItem = items.find((item) => item._id === editingItemId);
+          if (!uploadResults.main && existingItem)
+            uploadResults.main = existingItem.imageUrl;
+          if (!uploadResults.side1 && existingItem?.gallery)
+            uploadResults.side1 = existingItem.gallery.side1;
+          if (!uploadResults.side2 && existingItem?.gallery)
+            uploadResults.side2 = existingItem.gallery.side2;
+          if (!uploadResults.side3 && existingItem?.gallery)
+            uploadResults.side3 = existingItem.gallery.side3;
+        }
+
+        const itemData: any = {
+          name: form.name,
+          description: form.description,
+          categoryId,
+          imageUrl: uploadResults.main,
+          articleCode: form.articleCode,
+          grossWeight: form.grossWeight,
+          netWeight: form.netWeight,
+          designName: form.designName,
+          purity: form.purity,
+          gallery: {
+            image: uploadResults.main,
+            side1: uploadResults.side1 || "",
+            side2: uploadResults.side2 || "",
+            side3: uploadResults.side3 || "",
+          },
+        };
+
+        if (isEditMode && editingItemId) {
+          itemData.id = editingItemId;
+        }
+
+        const method = isEditMode ? "PUT" : "POST";
+        const res = await fetch("/api/items", {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(itemData),
+        });
+
+        if (res.ok) {
+          setShowAddEditModal(false);
+          resetForm();
+          fetchItems();
+          resolve(
+            isEditMode
+              ? "Item updated successfully!"
+              : "Item added successfully!",
+          );
+        } else {
+          const errorData = await res.json();
+          reject(errorData.error || "Error saving item");
+        }
+      } catch (error) {
+        console.error("Submit error:", error);
+        reject("Failed to save item");
+      } finally {
+        setLoading(false);
+        setUploading(false);
       }
+    });
 
-      await Promise.all(uploadPromises);
-
-      // Use existing URLs for edit mode if no new file uploaded
-      if (isEditMode && editingItemId) {
-        const existingItem = items.find((item) => item._id === editingItemId);
-        if (!uploadResults.main && existingItem)
-          uploadResults.main = existingItem.imageUrl;
-        if (!uploadResults.side1 && existingItem?.gallery)
-          uploadResults.side1 = existingItem.gallery.side1;
-        if (!uploadResults.side2 && existingItem?.gallery)
-          uploadResults.side2 = existingItem.gallery.side2;
-        if (!uploadResults.side3 && existingItem?.gallery)
-          uploadResults.side3 = existingItem.gallery.side3;
-      }
-
-      const itemData: any = {
-        name: form.name,
-        description: form.description,
-        categoryId,
-        imageUrl: uploadResults.main,
-        articleCode: form.articleCode,
-        grossWeight: form.grossWeight,
-        netWeight: form.netWeight,
-        designName: form.designName,
-        purity: form.purity,
-        gallery: {
-          image: uploadResults.main,
-          side1: uploadResults.side1 || "",
-          side2: uploadResults.side2 || "",
-          side3: uploadResults.side3 || "",
-        },
-      };
-
-      if (isEditMode && editingItemId) {
-        itemData.id = editingItemId;
-      }
-
-      const method = isEditMode ? "PUT" : "POST";
-      const res = await fetch("/api/items", {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(itemData),
-      });
-
-      if (res.ok) {
-        alert(isEditMode ? "Item updated!" : "Item added!");
-        setShowAddEditModal(false);
-        resetForm();
-        fetchItems();
-      } else {
-        const errorData = await res.json();
-        alert(`Error saving item: ${errorData.error || "Unknown error"}`);
-      }
-    } catch (error) {
-      console.error("Submit error:", error);
-      alert("Failed to save item!");
-    } finally {
-      setLoading(false);
-      setUploading(false);
-    }
+    toast.promise(submissionPromise, {
+      loading: isEditMode ? "Updating item..." : "Adding item...",
+      success: (message) => message as string,
+      error: (err) => err,
+    });
   };
 
   const handleDeleteItem = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this item?")) return;
-    try {
-      const res = await fetch(`/api/items`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
-      });
-      if (res.ok) {
-        alert("Item deleted!");
-        setShowViewModal(false);
-        fetchItems();
-      } else {
-        const data = await res.json();
-        alert(data.error || "Error deleting item!");
-      }
-    } catch (error) {
-      console.error("Delete failed:", error);
-      alert("Failed to delete item!");
-    }
-  };
+    // Custom toast for delete confirmation
+    toast.custom(
+      (t) => (
+        <div className="relative max-w-md w-full">
+          <div className="relative bg-linear-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 shadow-2xl p-6">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="p-3 bg-linear-to-br from-red-500 to-red-600 rounded-xl shadow-lg shadow-red-500/30">
+                <svg
+                  className="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white">Delete Item</h3>
+                <p className="text-slate-400 mt-1">
+                  This action cannot be undone
+                </p>
+              </div>
+            </div>
 
+            <p className="text-slate-300 mb-8">
+              Are you sure you want to delete this item? All associated data
+              will be permanently removed.
+            </p>
+
+            <div className="flex gap-4">
+              <button
+                onClick={() => {
+                  toast.dismiss(t.id);
+                }}
+                className="flex-1 px-6 py-3 bg-slate-800 border-2 border-slate-700 text-slate-300 rounded-xl hover:border-slate-600 hover:bg-slate-700 transition-all font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  toast.dismiss(t.id);
+
+                  const deletePromise = new Promise(async (resolve, reject) => {
+                    try {
+                      const res = await fetch(`/api/items`, {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ id }),
+                      });
+                      if (res.ok) {
+                        setShowViewModal(false);
+                        fetchItems();
+                        resolve("Item deleted successfully!");
+                      } else {
+                        const data = await res.json();
+                        reject(data.error || "Error deleting item!");
+                      }
+                    } catch (error) {
+                      console.error("Delete failed:", error);
+                      reject("Failed to delete item!");
+                    }
+                  });
+
+                  toast.promise(deletePromise, {
+                    loading: "Deleting item...",
+                    success: (message) => message as string,
+                    error: (err) => err,
+                  });
+                }}
+                className="flex-1 px-6 py-3 bg-linear-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all font-semibold shadow-lg hover:shadow-red-500/20"
+              >
+                Delete Item
+              </button>
+            </div>
+          </div>
+        </div>
+      ),
+      {
+        duration: Infinity, // Stays until user acts
+      },
+    );
+  };
   const resetForm = () => {
     setForm({
       name: "",
@@ -330,6 +421,51 @@ export default function CatalogueItemsPage() {
   if (fetching) {
     return (
       <div className="min-h-screen bg-linear-to-br from-slate-900 via-slate-950 to-slate-900 flex items-center justify-center">
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background:
+                "linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.95))",
+              color: "#fff",
+              backdropFilter: "blur(10px)",
+              border: "1px solid rgba(71, 85, 105, 0.3)",
+              borderRadius: "16px",
+              padding: "16px",
+              boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+            },
+            success: {
+              style: {
+                background:
+                  "linear-gradient(135deg, rgba(5, 150, 105, 0.95), rgba(4, 120, 87, 0.95))",
+                border: "1px solid rgba(16, 185, 129, 0.3)",
+              },
+              iconTheme: {
+                primary: "#10B981",
+                secondary: "#fff",
+              },
+            },
+            error: {
+              style: {
+                background:
+                  "linear-gradient(135deg, rgba(220, 38, 38, 0.95), rgba(185, 28, 28, 0.95))",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+              },
+              iconTheme: {
+                primary: "#EF4444",
+                secondary: "#fff",
+              },
+            },
+            loading: {
+              style: {
+                background:
+                  "linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.95))",
+                border: "1px solid rgba(71, 85, 105, 0.3)",
+              },
+            },
+          }}
+        />
         <div className="text-center">
           <p className="mt-6 allura-regular text-slate-300 font-light text-5xl tracking-wider">
             Loading Collection
@@ -341,6 +477,53 @@ export default function CatalogueItemsPage() {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-900 via-slate-950 to-slate-900">
+      {/* React Hot Toast Container */}
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background:
+              "linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.95))",
+            color: "#fff",
+            backdropFilter: "blur(10px)",
+            border: "1px solid rgba(71, 85, 105, 0.3)",
+            borderRadius: "16px",
+            padding: "16px",
+            boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+          },
+          success: {
+            style: {
+              background:
+                "linear-gradient(135deg, rgba(5, 150, 105, 0.95), rgba(4, 120, 87, 0.95))",
+              border: "1px solid rgba(16, 185, 129, 0.3)",
+            },
+            iconTheme: {
+              primary: "#10B981",
+              secondary: "#fff",
+            },
+          },
+          error: {
+            style: {
+              background:
+                "linear-gradient(135deg, rgba(220, 38, 38, 0.95), rgba(185, 28, 28, 0.95))",
+              border: "1px solid rgba(239, 68, 68, 0.3)",
+            },
+            iconTheme: {
+              primary: "#EF4444",
+              secondary: "#fff",
+            },
+          },
+          loading: {
+            style: {
+              background:
+                "linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.95))",
+              border: "1px solid rgba(71, 85, 105, 0.3)",
+            },
+          },
+        }}
+      />
+
       {/* Header with Sophisticated Design */}
       <header className="relative overflow-hidden bg-linear-to-r from-slate-900 via-slate-950 to-slate-900 border-b border-slate-700/50 shadow-2xl">
         <div className="absolute inset-0 bg-[radial-linear(ellipse_at_top,var(--tw-linear-stops))] from-emerald-500/5 via-transparent to-transparent"></div>
@@ -406,7 +589,9 @@ export default function CatalogueItemsPage() {
                 <div className="p-.5 bg-white/10 rounded-sm group-hover:rotate-90 transition-transform duration-300">
                   <FiPlus className="text-xl" />
                 </div>
-                <span className="tracking-wide whitespace-nowrap">Add New Item</span>
+                <span className="tracking-wide whitespace-nowrap">
+                  Add New Item
+                </span>
               </div>
             </button>
           </div>
@@ -423,7 +608,7 @@ export default function CatalogueItemsPage() {
                 <div className="absolute inset-0 bg-linear-to-r from-emerald-500/0 via-emerald-500/5 to-emerald-500/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                 <FiArrowLeft className="text-emerald-400 text-base group-hover:text-emerald-300 transition-colors" />
                 <span className="text-slate-300 font-medium tracking-wide group-hover:text-white transition-colors text-sm">
-                 Dashboard
+                  Dashboard
                 </span>
               </button>
 

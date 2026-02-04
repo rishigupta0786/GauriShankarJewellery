@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import toast, { Toaster } from "react-hot-toast";
 import {
   FiPlus,
   FiLogOut,
@@ -15,9 +16,6 @@ import {
   FiGrid,
   FiImage,
   FiFileText,
-  FiSettings,
-  FiStar,
-  FiTrendingUp,
   FiShoppingBag,
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
@@ -58,14 +56,20 @@ export default function DashboardPage() {
       setItems(data.items || []);
     } catch (error) {
       console.error("Failed to fetch items:", error);
+      toast.error("Failed to load collections");
     } finally {
       setFetching(false);
     }
   };
 
   const handleLogout = async () => {
-    await fetch("/api/logout", { method: "POST" });
-    router.push("/login");
+    try {
+      await fetch("/api/logout", { method: "POST" });
+      toast.success("Logged out successfully");
+      router.push("/login");
+    } catch (error) {
+      toast.error("Failed to logout");
+    }
   };
 
   // Handle clicking on a card to view its items
@@ -99,18 +103,19 @@ export default function DashboardPage() {
         "image/jpg",
       ];
       if (!validTypes.includes(file.type)) {
-        alert("Please select a valid image file (JPEG, PNG, GIF, WebP)");
+        toast.error("Please select a valid image file (JPEG, PNG, GIF, WebP)");
         return;
       }
 
       if (file.size > 5 * 1024 * 1024) {
-        alert("File size should be less than 5MB");
+        toast.error("File size should be less than 5MB");
         return;
       }
 
       setSelectedFile(file);
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
+      toast.success("Image selected successfully");
     }
   };
 
@@ -120,6 +125,9 @@ export default function DashboardPage() {
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+    toast("Image removed", {
+      icon: "🗑️",
+    });
   };
 
   const uploadImageToCloudinary = async () => {
@@ -141,10 +149,11 @@ export default function DashboardPage() {
         throw new Error(data.error || "Upload failed");
       }
 
+      toast.success("Image uploaded successfully");
       return data.url;
     } catch (error) {
       console.error("Upload error:", error);
-      alert("Failed to upload image. Please try again.");
+      toast.error("Failed to upload image. Please try again.");
       return "";
     } finally {
       setUploading(false);
@@ -167,7 +176,12 @@ export default function DashboardPage() {
           setLoading(false);
           return;
         }
-      } else if (isEditMode && !selectedFile && previewUrl && !previewUrl.startsWith('blob:')) {
+      } else if (
+        isEditMode &&
+        !selectedFile &&
+        previewUrl &&
+        !previewUrl.startsWith("blob:")
+      ) {
         // In edit mode, keep the existing image if no new file is selected
         imageUrl = previewUrl;
       }
@@ -184,13 +198,13 @@ export default function DashboardPage() {
         });
 
         if (res.ok) {
-          alert("Category updated successfully!");
+          toast.success("Collection updated successfully!");
           setIsOpen(false);
           resetForm();
           fetchItems();
         } else {
           const error = await res.json();
-          alert(error.error || "Error updating category!");
+          toast.error(error.error || "Error updating collection!");
         }
       } else {
         // Create new item
@@ -204,17 +218,17 @@ export default function DashboardPage() {
         });
 
         if (res.ok) {
-          alert("Category added successfully!");
+          toast.success("Collection added successfully!");
           setIsOpen(false);
           resetForm();
           fetchItems();
         } else {
           const error = await res.json();
-          alert(error.error || "Error adding category!");
+          toast.error(error.error || "Error adding collection!");
         }
       }
     } catch (error) {
-      alert("Failed to save category!");
+      toast.error("Failed to save collection!");
     } finally {
       setLoading(false);
     }
@@ -233,23 +247,79 @@ export default function DashboardPage() {
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent card click event
-    if (!confirm("Are you sure you want to delete this catalogue category?"))
-      return;
 
-    try {
-      const res = await fetch(`/api/catalogue/${id}`, {
-        method: "DELETE",
-      });
+    // Use a single confirmation toast instead of alert
+    toast.custom(
+      (t) => (
+        <div className="relative max-w-md w-full">
+          <div className="relative bg-linear-to-br from-gray-800 to-gray-900 rounded-2xl border border-gray-700/50 shadow-2xl p-6">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="p-3 bg-linear-to-br from-red-500 to-red-600 rounded-xl shadow-lg shadow-red-500/30">
+                <FiTrash2 className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white">
+                  Delete Collection
+                </h3>
+                <p className="text-gray-400 mt-1">
+                  This action cannot be undone
+                </p>
+              </div>
+            </div>
 
-      if (res.ok) {
-        alert("Catalogue category deleted!");
-        fetchItems();
-      } else {
-        alert("Error deleting category!");
-      }
-    } catch (error) {
-      alert("Failed to delete category!");
-    }
+            <p className="text-gray-300 mb-8">
+              Are you sure you want to delete this collection? All items in this
+              collection will be permanently removed.
+            </p>
+
+            <div className="flex gap-4">
+              <button
+                onClick={() => {
+                  toast.dismiss(t.id);
+                }}
+                className="flex-1 px-6 py-3 bg-gray-800 border-2 border-gray-700 text-gray-300 rounded-xl hover:border-gray-600 hover:bg-gray-700 transition-all font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  toast.dismiss(t.id);
+
+                  const deletePromise = new Promise(async (resolve, reject) => {
+                    try {
+                      const res = await fetch(`/api/catalogue/${id}`, {
+                        method: "DELETE",
+                      });
+
+                      if (res.ok) {
+                        fetchItems();
+                        resolve("Collection deleted successfully!");
+                      } else {
+                        reject("Error deleting collection!");
+                      }
+                    } catch (error) {
+                      reject("Failed to delete collection!");
+                    }
+                  });
+
+                  toast.promise(deletePromise, {
+                    loading: "Deleting collection...",
+                    success: (message) => message as string,
+                    error: (err) => err,
+                  });
+                }}
+                className="flex-1 px-6 py-3 bg-linaer-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all font-semibold shadow-lg hover:shadow-red-500/20"
+              >
+                Delete Collection
+              </button>
+            </div>
+          </div>
+        </div>
+      ),
+      {
+        duration: Infinity, // Stays until user acts
+      },
+    );
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -258,12 +328,59 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-900 via-gray-900 to-black pt-20">
+      {/* React Hot Toast Container */}
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background:
+              "linear-gradient(135deg, rgba(31, 41, 55, 0.95), rgba(17, 24, 39, 0.95))",
+            color: "#fff",
+            backdropFilter: "blur(10px)",
+            border: "1px solid rgba(75, 85, 99, 0.3)",
+            borderRadius: "16px",
+            padding: "16px",
+            boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)",
+          },
+          success: {
+            style: {
+              background:
+                "linear-gradient(135deg, rgba(5, 150, 105, 0.95), rgba(4, 120, 87, 0.95))",
+              border: "1px solid rgba(16, 185, 129, 0.3)",
+            },
+            iconTheme: {
+              primary: "#10B981",
+              secondary: "#fff",
+            },
+          },
+          error: {
+            style: {
+              background:
+                "linear-gradient(135deg, rgba(220, 38, 38, 0.95), rgba(185, 28, 28, 0.95))",
+              border: "1px solid rgba(239, 68, 68, 0.3)",
+            },
+            iconTheme: {
+              primary: "#EF4444",
+              secondary: "#fff",
+            },
+          },
+          loading: {
+            style: {
+              background:
+                "linear-gradient(135deg, rgba(31, 41, 55, 0.95), rgba(17, 24, 39, 0.95))",
+              border: "1px solid rgba(75, 85, 99, 0.3)",
+            },
+          },
+        }}
+      />
+
       {/* Modern Elegant Header */}
-      <header className=" top-0 z-40 bg-gray-900/95 backdrop-blur-xl border-b border-gray-800/30 shadow-2xl shadow-black/20">
+      <header className="fixed top-0 left-0 right-0 z-40 bg-gray-900/95 backdrop-blur-xl border-b border-gray-800/30 shadow-2xl shadow-black/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Left Section - Logo & Brand */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               className="flex items-center gap-4"
@@ -275,29 +392,29 @@ export default function DashboardPage() {
                   <FiShoppingBag className="w-6 h-6 text-white" />
                 </div>
               </div>
-              
+
               {/* Brand Text */}
               <div>
-                <motion.h1 
+                <motion.h1
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.1 }}
                   className="text-2xl font-bold bg-linear-to-r from-amber-300 via-amber-200 to-amber-300 bg-clip-text text-transparent allura-regular tracking-tight"
                 >
-                 Jewelry Collection
+                  Jewelry Collection
                 </motion.h1>
-                <motion.p 
+                <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2 }}
-                  className=" text-gray-400 allura-regular  font-light tracking-wider"
+                  className="text-gray-400 allura-regular font-light tracking-wider"
                 >
                   Collection Management Portal
                 </motion.p>
               </div>
             </motion.div>
-            
-            {/* logoit button*/}
+
+            {/* logout button*/}
             <div className="flex items-center gap-4">
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -307,7 +424,9 @@ export default function DashboardPage() {
               >
                 <div className="absolute inset-0 bg-linear-to-r from-red-600/0 via-red-600/5 to-red-600/0 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
                 <FiLogOut className="w-4 h-4 relative z-10" />
-                <span className="font-medium text-sm relative z-10 hidden sm:inline">Sign Out</span>
+                <span className="font-medium text-sm relative z-10 hidden sm:inline">
+                  Sign Out
+                </span>
               </motion.button>
             </div>
           </div>
@@ -317,19 +436,19 @@ export default function DashboardPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Dashboard Header */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="relative mb-12"
         >
-          {/* Background Gradient Effects */}
+          {/* Background linear Effects */}
           <div className="absolute inset-0 bg-linear-to-r from-amber-900/5 via-transparent to-violet-900/5 rounded-3xl blur-3xl"></div>
-          
+
           {/* Content Container */}
           <div className="relative bg-linear-to-br from-gray-800/30 to-gray-900/20 backdrop-blur-xl rounded-3xl border border-gray-700/30 shadow-2xl shadow-black/20 overflow-hidden">
-            {/* Animated Border Gradient */}
-            <div className="absolute inset-0 bg-linear-to-r from-amber-600/10 via-violet-600/10 to-amber-600/10 animate-gradient-x"></div>
-            
+            {/* Animated Border linear */}
+            <div className="absolute inset-0 bg-linear-to-r from-amber-600/10 via-violet-600/10 to-amber-600/10 animate-linear-x"></div>
+
             {/* Inner Content */}
             <div className="relative p-8 lg:p-12">
               <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
@@ -345,8 +464,8 @@ export default function DashboardPage() {
                       </span>
                     </div>
                   </div>
-                  
-                  <motion.h2 
+
+                  <motion.h2
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
@@ -356,18 +475,19 @@ export default function DashboardPage() {
                       Your Collections
                     </span>
                   </motion.h2>
-                  
-                  <motion.p 
+
+                  <motion.p
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
                     className="text-lg text-gray-400 max-w-2xl leading-relaxed"
                   >
-                    Manage and showcase your exquisite jewellery collections with our premium dashboard. 
-                    Create, organize, and display your masterpieces effortlessly.
+                    Manage and showcase your exquisite jewellery collections
+                    with our premium dashboard. Create, organize, and display
+                    your masterpieces effortlessly.
                   </motion.p>
                 </div>
-                
+
                 {/* Right - Create Button */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -386,7 +506,7 @@ export default function DashboardPage() {
                   >
                     {/* Animated Background */}
                     <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                    
+
                     {/* Button Content */}
                     <div className="relative flex items-center gap-3">
                       <div className="p-2 bg-white/10 rounded-lg group-hover:rotate-90 transition-transform duration-300">
@@ -415,11 +535,15 @@ export default function DashboardPage() {
                 <FiPackage className="w-8 h-8 text-amber-600 animate-pulse" />
               </div>
             </div>
-            <p className="mt-6 font-medium text-gray-300 allura-regular text-5xl">Loading collections...</p>
-            <p className="text-gray-500 allura-regular text-5xl">Preparing your beautiful catalogue</p>
+            <p className="mt-6 font-medium text-gray-300 allura-regular text-5xl">
+              Loading collections...
+            </p>
+            <p className="text-gray-500 allura-regular text-5xl">
+              Preparing your beautiful catalogue
+            </p>
           </div>
         ) : items.length === 0 ? (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center py-24 bg-linear-to-br from-gray-800/50 to-gray-900/50 rounded-3xl border-2 border-dashed border-gray-700/50 backdrop-blur-sm"
@@ -431,7 +555,8 @@ export default function DashboardPage() {
               No collections yet
             </h3>
             <p className="text-gray-400 max-w-md mx-auto mb-8">
-              Start by creating your first jewellery collection to showcase your products
+              Start by creating your first jewellery collection to showcase your
+              products
             </p>
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -446,7 +571,7 @@ export default function DashboardPage() {
             </motion.button>
           </motion.div>
         ) : (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
@@ -460,16 +585,16 @@ export default function DashboardPage() {
                 onClick={() => handleCardClick(item._id, item.title)}
                 className="group bg-linear-to-br from-gray-800/50 to-gray-900/50 rounded-2xl overflow-hidden border border-gray-700/50 hover:border-amber-500/30 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 cursor-pointer backdrop-blur-sm"
               >
-                {/* Image Section with Gradient Overlay */}
+                {/* Image Section with linear Overlay */}
                 <div className="relative h-56 overflow-hidden bg-linear-to-br from-gray-800 to-gray-900">
                   {item.imageUrl ? (
                     <img
                       src={item.imageUrl}
                       alt={item.title}
-                      className=" p-2 object-cover group-hover:scale-110 transition-transform duration-500"
+                      className="p-2 object-cover group-hover:scale-110 transition-transform duration-500"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src =
-                          'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23d97706;stop-opacity:0.1" /><stop offset="100%" style="stop-color:%23b45309;stop-opacity:0.1" /></linearGradient></defs><rect width="400" height="300" fill="url(%23grad)"/></svg>';
+                          'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><defs><linearlinear id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23d97706;stop-opacity:0.1" /><stop offset="100%" style="stop-color:%23b45309;stop-opacity:0.1" /></linearlinear></defs><rect width="400" height="300" fill="url(%23grad)"/></svg>';
                       }}
                     />
                   ) : (
@@ -480,10 +605,10 @@ export default function DashboardPage() {
                       </div>
                     </div>
                   )}
-                  
-                  {/* Gradient Overlay */}
+
+                  {/* linear Overlay */}
                   <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  
+
                   {/* Action Buttons */}
                   <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <motion.button
@@ -582,13 +707,14 @@ export default function DashboardPage() {
                     </div>
                     <div>
                       <h2 className="text-2xl font-bold text-white">
-                        {isEditMode ? "Edit Collection" : "Create New Collection"}
+                        {isEditMode
+                          ? "Edit Collection"
+                          : "Create New Collection"}
                       </h2>
                       <p className="text-gray-400 mt-1">
-                        {isEditMode 
-                          ? "Update your collection details" 
-                          : "Add a new jewellery collection to your catalogue"
-                        }
+                        {isEditMode
+                          ? "Update your collection details"
+                          : "Add a new jewellery collection to your catalogue"}
                       </p>
                     </div>
                   </div>
@@ -653,7 +779,7 @@ export default function DashboardPage() {
                       <FiImage className="w-4 h-4" />
                       Collection Image
                     </label>
-                    
+
                     {/* File Upload Card */}
                     <div
                       onClick={() => fileInputRef.current?.click()}
@@ -681,12 +807,12 @@ export default function DashboardPage() {
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
                                   (e.target as HTMLImageElement).src =
-                                    'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23d97706;stop-opacity:0.2" /><stop offset="100%" style="stop-color:%23b45309;stop-opacity:0.2" /></linearGradient></defs><rect width="600" height="400" fill="url(%23grad)"/></svg>';
+                                    'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><defs><linearlinear id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23d97706;stop-opacity:0.2" /><stop offset="100%" style="stop-color:%23b45309;stop-opacity:0.2" /></linearlinear></defs><rect width="600" height="400" fill="url(%23grad)"/></svg>';
                                 }}
                               />
                               <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent"></div>
                             </div>
-                            
+
                             {selectedFile && (
                               <motion.div
                                 initial={{ opacity: 0, y: 10 }}
@@ -740,10 +866,11 @@ export default function DashboardPage() {
                         </div>
                       )}
                     </div>
-                    
+
                     {isEditMode && previewUrl && !selectedFile && (
                       <p className="text-sm text-gray-400 text-center mt-4">
-                        Current image will be retained. Upload a new image to replace it.
+                        Current image will be retained. Upload a new image to
+                        replace it.
                       </p>
                     )}
                   </div>
@@ -763,7 +890,7 @@ export default function DashboardPage() {
                     >
                       Cancel
                     </motion.button>
-                    
+
                     <motion.button
                       type="submit"
                       whileHover={{ scale: 1.02 }}
@@ -783,8 +910,18 @@ export default function DashboardPage() {
                         </>
                       ) : isEditMode ? (
                         <>
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
                           </svg>
                           Update Collection
                         </>
@@ -804,16 +941,17 @@ export default function DashboardPage() {
       </AnimatePresence>
 
       <style jsx global>{`
-        @keyframes gradient-x {
-          0%, 100% {
+        @keyframes linear-x {
+          0%,
+          100% {
             background-position: 0% 50%;
           }
           50% {
             background-position: 100% 50%;
           }
         }
-        .animate-gradient-x {
-          animation: gradient-x 3s ease infinite;
+        .animate-linear-x {
+          animation: linear-x 3s ease infinite;
           background-size: 200% 200%;
         }
       `}</style>

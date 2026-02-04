@@ -68,25 +68,25 @@ export default function ItemViewModal({
     visible: {
       opacity: 1,
       scale: 1,
-      transition: { duration: 0.2 }
+      transition: { duration: 0.2 },
     },
     exit: {
       opacity: 0,
       scale: 0.95,
-      transition: { duration: 0.15 }
-    }
+      transition: { duration: 0.15 },
+    },
   };
 
   const backdropVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { duration: 0.1 }
+      transition: { duration: 0.1 },
     },
     exit: {
       opacity: 0,
-      transition: { duration: 0.1 }
-    }
+      transition: { duration: 0.1 },
+    },
   };
 
   // Prevent modal content clicks from closing the modal
@@ -105,9 +105,7 @@ export default function ItemViewModal({
         onClick={onClose}
       >
         {/* Glass Morphic Backdrop */}
-        <motion.div
-          className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-        />
+        <motion.div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
 
         {/* Modal Container */}
         <motion.div
@@ -140,7 +138,7 @@ export default function ItemViewModal({
                         alt={`${item.name} - view ${currentImageIndex + 1}`}
                         className="w-full h-full object-contain"
                       />
-                      
+
                       {/* Navigation */}
                       {images.length > 1 && (
                         <>
@@ -156,7 +154,7 @@ export default function ItemViewModal({
                           >
                             <FiChevronRight className="w-4 h-4 text-white" />
                           </button>
-                          
+
                           {/* Image Counter */}
                           <div className="absolute top-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
                             {currentImageIndex + 1} / {images.length}
@@ -192,7 +190,9 @@ export default function ItemViewModal({
                   <div className="flex items-center justify-center h-full">
                     <div className="text-center">
                       <div className="text-3xl mb-2">📷</div>
-                      <p className="text-gray-400 text-sm">No images available</p>
+                      <p className="text-gray-400 text-sm">
+                        No images available
+                      </p>
                     </div>
                   </div>
                 )}
@@ -204,7 +204,9 @@ export default function ItemViewModal({
               <div className="space-y-4">
                 {/* Header */}
                 <div>
-                  <h2 className="text-xl font-bold text-white mb-1">{item.name}</h2>
+                  <h2 className="text-xl font-bold text-white mb-1">
+                    {item.name}
+                  </h2>
                   <div className="flex items-center gap-2 text-sm text-gray-400">
                     <FiTag className="w-3 h-3" />
                     {item.articleCode}
@@ -223,23 +225,33 @@ export default function ItemViewModal({
 
                 {/* Specifications Grid */}
                 <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
-                  <h3 className="text-white font-medium mb-3">Specifications</h3>
+                  <h3 className="text-white font-medium mb-3">
+                    Specifications
+                  </h3>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
                       <div className="text-xs text-gray-400">Design Name</div>
-                      <div className="text-sm font-medium text-white">{item.designName || "N/A"}</div>
+                      <div className="text-sm font-medium text-white">
+                        {item.designName || "N/A"}
+                      </div>
                     </div>
                     <div className="space-y-1">
                       <div className="text-xs text-gray-400">Purity</div>
-                      <div className="text-sm font-medium text-white">{item.purity || "N/A"}</div>
+                      <div className="text-sm font-medium text-white">
+                        {item.purity || "N/A"}
+                      </div>
                     </div>
                     <div className="space-y-1">
                       <div className="text-xs text-gray-400">Gross Weight</div>
-                      <div className="text-sm font-medium text-white">{item.grossWeight || "N/A"}g</div>
+                      <div className="text-sm font-medium text-white">
+                        {item.grossWeight || "N/A"}g
+                      </div>
                     </div>
                     <div className="space-y-1">
                       <div className="text-xs text-gray-400">Net Weight</div>
-                      <div className="text-sm font-medium text-white">{item.netWeight || "N/A"}g</div>
+                      <div className="text-sm font-medium text-white">
+                        {item.netWeight || "N/A"}g
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -247,7 +259,8 @@ export default function ItemViewModal({
                 {/* Date */}
                 <div className="flex items-center gap-2 text-sm text-gray-400">
                   <FiCalendar className="w-4 h-4" />
-                  Created {new Date(item.createdAt).toLocaleDateString("en-US", {
+                  Created{" "}
+                  {new Date(item.createdAt).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
                     year: "numeric",
@@ -265,9 +278,7 @@ export default function ItemViewModal({
                   </button>
                   <button
                     onClick={() => {
-                      if (confirm("Are you sure you want to delete this item?")) {
-                        onDelete(item._id);
-                      }
+                      onDelete(item._id);
                     }}
                     className="flex-1 min-w-0 px-3 py-2.5 bg-linear-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition-all font-medium text-sm flex items-center justify-center gap-1.5 whitespace-nowrap"
                   >
