@@ -22,15 +22,18 @@ export default function Banner() {
   useEffect(() => {
     const fetchPrices = async () => {
       try {
-        const res = await fetch("https://data-asg.goldprice.org/dbXRates/USD");
+        const res = await fetch(
+          "https://api.metalpriceapi.com/v1/latest?api_key=3dd56d62edd7c834c41c5dd2663bc9e2&base=USD&currencies=EUR,XAU,XAG"
+        );
         const data = await res.json();
-        const goldUSD = data.items[0].xauPrice;
-        const silverUSD = data.items[0].xagPrice;
+        console.log(data);
+        
+        // Extract rates from the response
+        const goldUSD = 1 / data.rates.XAU; // Convert XAU/USD to USD/XAU
+        const silverUSD = 1 / data.rates.XAG; // Convert XAG/USD to USD/XAG
 
         const goldINR = ((goldUSD * USD_INR) / OUNCE_TO_GRAM) * INDIA_FACTOR;
-        const silverINR =
-          ((silverUSD * USD_INR) / OUNCE_TO_GRAM) * INDIA_FACTOR;
-
+        const silverINR = ((silverUSD * USD_INR) / OUNCE_TO_GRAM) * INDIA_FACTOR;
         setPrices({ gold: goldINR, silver: silverINR });
       } catch (err) {
         console.error("Failed to fetch metal prices:", err);
@@ -76,21 +79,13 @@ export default function Banner() {
       {/* Main content container */}
       <div className="w-full flex items-center justify-evenly relative z-10 mt-5">
         <div className=" hidden md:flex justify-start">
-          <Image 
-            src={leftpeacock} 
-            alt="left" 
-            width={250}
-          />
+          <Image src={leftpeacock} alt="left" width={250} />
         </div>
         <div className="flex-none mt-5 mx-4 lg:mx-8 relative z-10">
           <JewelleryHero />
         </div>
         <div className=" hidden md:flex justify-end relative z-10">
-          <Image 
-            src={rightpeacock} 
-            alt="right" 
-            width={250}
-          />
+          <Image src={rightpeacock} alt="right" width={250} />
         </div>
       </div>
 
